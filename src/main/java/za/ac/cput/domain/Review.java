@@ -2,7 +2,7 @@ package za.ac.cput.domain;
 
 import java.time.LocalDate;
 
-public class Review {
+public class   Review {
     private int reviewID;
     private int productID;
     private int userID;
