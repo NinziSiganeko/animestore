@@ -1,5 +1,7 @@
+//Review POJO class
+//Author :S Mzaza(220030898)
+//Date: 07 May 2025
 package za.ac.cput.domain;
-
 import java.time.LocalDate;
 
 public class   Review {
