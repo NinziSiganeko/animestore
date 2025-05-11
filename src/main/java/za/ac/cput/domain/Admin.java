@@ -1,3 +1,7 @@
+//Admin POJO class
+//Author :PV Nakedi
+//Date: 04 May 2025
+
 package za.ac.cput.domain;
 
     public class Admin extends User {
