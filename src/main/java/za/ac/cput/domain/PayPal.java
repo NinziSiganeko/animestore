@@ -1,8 +1,13 @@
 package za.ac.cput.domain;
 
 import java.time.LocalDate;
+/*
+ *
+ * Author S Ninzi(222522569)
+ *
+ * */
 
-public class PayPal extends CreditCard {
+public class PayPal extends Payment {
     private String email;
 
     public PayPal(){
