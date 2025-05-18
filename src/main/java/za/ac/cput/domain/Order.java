@@ -3,11 +3,11 @@ package za.ac.cput.domain;
 import java.time.LocalDate;
 
 public class Order {
-    private int orderId ;
+    private int orderId;
     private LocalDate orderDate;
     private String status;
 
-    private Order(){
+    private Order() {
 
     }
 
@@ -17,10 +17,18 @@ public class Order {
         this.status = builder.status;
 
     }
-    public int getOrderId() {return orderId;}
 
-    public LocalDate getOrderDate() {return orderDate;}
-    public String getStatus() {return status;}
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 
 
     @Override
@@ -56,18 +64,19 @@ public class Order {
         }
 
 
-    }
-        public Order copy(Order order) {
-            this.orderId = order.getOrderId ();
-            this.orderDate = order.getOrderDate() ;
+        public Builder copy(Order order) {
+            this.orderId = order.getOrderId();
+            this.orderDate = order.getOrderDate();
             this.status = order.getStatus();
             return this;
         }
 
 
+        public Order build() {
+            return new Order(this);
+        }
 
-      public Order build() {return new Order(this);}
-
+    }
 }
 
 
