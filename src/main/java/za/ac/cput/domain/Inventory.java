@@ -4,19 +4,19 @@
 package za.ac.cput.domain;
 
 public class Inventory {
-    private int InventoryID;
+    private int inventoryID;
     private String location;
 
     public Inventory() {
     }
 
     public Inventory(Builder builder) {
-        InventoryID = Builder.InventoryID;
-        this.location = Builder.location;
+        inventoryID = builder.inventoryID;
+        this.location = builder.location;
     }
 
     public int getInventoryID() {
-        return InventoryID;
+        return inventoryID;
     }
 
     public String getLocation() {
@@ -26,16 +26,16 @@ public class Inventory {
     @Override
     public String toString() {
         return "Inventory{" +
-                "InventoryID=" + InventoryID +
+                "InventoryID=" + inventoryID +
                 ", location='" + location + '\'' +
                 '}';
     }
     public static class Builder {
-        private static int InventoryID;
-        private static String location;
+        private  int inventoryID;
+        private   String location;
 
         public Builder setInventoryID(int inventoryID) {
-            InventoryID = inventoryID;
+            inventoryID = inventoryID;
             return this;
         }
 
@@ -45,7 +45,7 @@ public class Inventory {
 
         }
         public Builder copy(Inventory inventory) {
-            InventoryID = inventory.getInventoryID();
+            inventoryID = inventory.getInventoryID();
             location = inventory.getLocation();
             return this;
         }
