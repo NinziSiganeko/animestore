@@ -1,6 +1,5 @@
 package za.ac.cput.domain;
 
-
 import java.time.LocalDate;
 
 public class Order {
@@ -56,22 +55,26 @@ public class Order {
             return this;
         }
 
-        public Builder copy(Order order) {
+
+    }
+        public Order copy(Order order) {
             this.orderId = order.getOrderId ();
             this.orderDate = order.getOrderDate() ;
             this.status = order.getStatus();
             return this;
-
-
         }
 
 
-        public Order build() {
-            return new Order(this);
 
-        }
-    }
-
-
+      public Order build() {return new Order(this);}
 
 }
+
+
+
+
+
+
+
+
+
