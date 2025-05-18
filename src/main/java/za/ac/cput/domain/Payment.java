@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 public class Payment {
 
     private String paymentId;
-    private String orderId;              // Link to the order
-    private String customerId;           // Optional: link to customer
+    private String orderId;
+    private String customerId;
     private double amount;
-    private PaymentMethod method;        // Enum or class (e.g., CREDIT_CARD, PAYPAL, etc.)
+    private PaymentMethod method;
     private LocalDateTime paymentDate;
-    private PaymentStatus status;        // Enum: PENDING, COMPLETED, FAILED, REFUNDED
-    private String transactionReference; // From payment gateway (e.g., PayPal, Stripe)
+    private PaymentStatus status;
+    private String transactionReference;
 
     public Payment() {
     }
@@ -146,6 +146,7 @@ public class Payment {
         }
         public Payment build() {
             return new Payment(this);
+
         }
     }
 }
