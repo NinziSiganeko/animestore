@@ -31,8 +31,8 @@ public class Inventory {
                 '}';
     }
     public static class Builder {
-        private int inventoryID;
-        private String location;
+        private  int inventoryID;
+        private   String location;
 
         public Builder setInventoryID(int inventoryID) {
             inventoryID = inventoryID;
