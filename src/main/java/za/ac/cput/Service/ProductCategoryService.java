@@ -1,4 +1,4 @@
-package za.ac.cput.service;
+package za.ac.cput.Service;
 
 import za.ac.cput.domain.ProductCategory;
 import java.util.List;
