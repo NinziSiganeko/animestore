@@ -3,7 +3,7 @@ package za.ac.cput.Service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Anime;
-import za.ac.cput.repository.AnimeRepository;
+import za.ac.cput.Repository.AnimeRepository;
 import za.ac.cput.Service.AnimeService;
 
 import java.util.List;
