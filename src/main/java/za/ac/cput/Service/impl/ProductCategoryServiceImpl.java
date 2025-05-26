@@ -3,7 +3,7 @@ package za.ac.cput.Service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.ProductCategory;
-import za.ac.cput.repository.ProductCategoryRepository;
+import za.ac.cput.Repository.ProductCategoryRepository;
 import za.ac.cput.Service.ProductCategoryService;
 
 import java.util.List;
