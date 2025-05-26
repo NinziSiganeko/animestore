@@ -14,6 +14,7 @@ public class Anime {
     private String studio;
     private String imageUrl;
 
+
     public Anime() {}
 
     public Anime(Builder builder) {
