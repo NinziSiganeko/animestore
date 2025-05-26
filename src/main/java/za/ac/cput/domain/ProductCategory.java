@@ -1,55 +1,36 @@
-/* ProductCategory.java
-   ProductCategory POJO class based on UML diagram
-   Author: onthatile 221230793
-   Date: 11 May 2025
-*/
-
 package za.ac.cput.domain;
 
+import jakarta.persistence.*;
+
+@Entity
 public class ProductCategory {
-    private int categoryId;
+
+    @Id
+    private String categoryId;
     private String categoryName;
 
-    private ProductCategory() {}
+    public ProductCategory() {}
 
     public ProductCategory(Builder builder) {
         this.categoryId = builder.categoryId;
         this.categoryName = builder.categoryName;
     }
 
-    public int getCategoryId() {
-        return categoryId;
-    }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    @Override
-    public String toString() {
-        return "ProductCategory{" +
-                "categoryId=" + categoryId +
-                ", categoryName='" + categoryName + '\'' +
-                '}';
-    }
+    public String getCategoryId() { return categoryId; }
+    public String getCategoryName() { return categoryName; }
 
     public static class Builder {
-        private int categoryId;
+        private String categoryId;
         private String categoryName;
 
-        public Builder setCategoryId(int categoryId) {
+        public Builder setCategoryId(String categoryId) {
             this.categoryId = categoryId;
             return this;
         }
 
         public Builder setCategoryName(String categoryName) {
             this.categoryName = categoryName;
-            return this;
-        }
-
-        public Builder copy(ProductCategory category) {
-            this.categoryId = category.getCategoryId();
-            this.categoryName = category.getCategoryName();
             return this;
         }
 
