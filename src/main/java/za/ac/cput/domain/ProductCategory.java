@@ -1,24 +1,24 @@
 package za.ac.cput.domain;
 
+import jakarta.persistence.*;
+
+@Entity
 public class ProductCategory {
+
+    @Id
     private String categoryId;
     private String categoryName;
 
-    // Private constructor
-    private ProductCategory(Builder builder) {
+    public ProductCategory() {}
+
+    public ProductCategory(Builder builder) {
         this.categoryId = builder.categoryId;
         this.categoryName = builder.categoryName;
     }
 
-    public String getCategoryId() {
-        return categoryId;
-    }
+    public String getCategoryId() { return categoryId; }
+    public String getCategoryName() { return categoryName; }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    // Builder class
     public static class Builder {
         private String categoryId;
         private String categoryName;

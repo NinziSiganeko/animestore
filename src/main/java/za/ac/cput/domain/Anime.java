@@ -1,12 +1,11 @@
-/* Anime.java
-   Anime POJO class based on UML diagram
-   Author: onthatile 221230793
-   Date: 13 May 2025
-*/
-
+// Annotated Anime.java
 package za.ac.cput.domain;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Anime {
+    @Id
     private int animeId;
     private String title;
     private String genre;
@@ -15,7 +14,7 @@ public class Anime {
     private String studio;
     private String imageUrl;
 
-    private Anime() {}
+    public Anime() {}
 
     public Anime(Builder builder) {
         this.animeId = builder.animeId;
@@ -27,33 +26,13 @@ public class Anime {
         this.imageUrl = builder.imageUrl;
     }
 
-    public int getAnimeId() {
-        return animeId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getReleaseYear() {
-        return releaseYear;
-    }
-
-    public String getStudio() {
-        return studio;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
+    public int getAnimeId() { return animeId; }
+    public String getTitle() { return title; }
+    public String getGenre() { return genre; }
+    public String getDescription() { return description; }
+    public int getReleaseYear() { return releaseYear; }
+    public String getStudio() { return studio; }
+    public String getImageUrl() { return imageUrl; }
 
     @Override
     public String toString() {
@@ -78,40 +57,26 @@ public class Anime {
         private String imageUrl;
 
         public Builder setAnimeId(int animeId) {
-            this.animeId = animeId;
-            return this;
+            this.animeId = animeId; return this;
         }
-
         public Builder setTitle(String title) {
-            this.title = title;
-            return this;
+            this.title = title; return this;
         }
-
         public Builder setGenre(String genre) {
-            this.genre = genre;
-            return this;
+            this.genre = genre; return this;
         }
-
         public Builder setDescription(String description) {
-            this.description = description;
-            return this;
+            this.description = description; return this;
         }
-
         public Builder setReleaseYear(int releaseYear) {
-            this.releaseYear = releaseYear;
-            return this;
+            this.releaseYear = releaseYear; return this;
         }
-
         public Builder setStudio(String studio) {
-            this.studio = studio;
-            return this;
+            this.studio = studio; return this;
         }
-
         public Builder setImageUrl(String imageUrl) {
-            this.imageUrl = imageUrl;
-            return this;
+            this.imageUrl = imageUrl; return this;
         }
-
         public Builder copy(Anime anime) {
             this.animeId = anime.getAnimeId();
             this.title = anime.getTitle();
@@ -122,9 +87,6 @@ public class Anime {
             this.imageUrl = anime.getImageUrl();
             return this;
         }
-
-        public Anime build() {
-            return new Anime(this);
-        }
+        public Anime build() { return new Anime(this); }
     }
 }
