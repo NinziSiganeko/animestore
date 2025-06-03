@@ -2,7 +2,10 @@ package za.ac.cput.util;
 
 import za.ac.cput.domain.Customer;
 
-import java.util.UUID;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.regex.Pattern;
 
 public class Helper {
     public static boolean isNullOrEmpty(String str) {
@@ -23,9 +26,21 @@ public class Helper {
             return email.matches(emailRegex);
         }
 
-    public static String generatePaymentId() {
-        return "PAY-" + UUID.randomUUID();
+
+    public static boolean isValidCard(String cardNumber) {
+        if (isNullOrEmpty(cardNumber)) return false;
+        return Pattern.matches("^\\d{16}$", cardNumber);
     }
-        }
+    public static boolean isValidAmount(double amount) {
+        return amount > 0;
+    }
+    public static LocalDateTime getPaymentDate(LocalDateTime paymentDate) {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
+        return now;
+    }
+
+
+
+}
 
 
