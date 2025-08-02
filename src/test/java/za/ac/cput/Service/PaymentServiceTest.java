@@ -23,7 +23,7 @@ class PaymentServiceTest {
     @Autowired
     private IPaymentService service;
 
-    private static Payment payment = PaymentFactory.createPayment("PAY-001", "ORD-101", "CUST-9001",
+    private static Payment payment = PaymentFactory.createPayment(75469697L, "ORD-101", "CUST-9001",
                                     1299.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-0001",
                                     "1234567812345678", LocalDateTime.now());
 
@@ -57,7 +57,7 @@ class PaymentServiceTest {
     void d_delete() {
         boolean deleted = service.delete(payment.getPaymentId());
         assertTrue(deleted);
-        System.out.println("Deleted: " + deleted);
+        System.out.println("Deleted: " + true);
     }
 
     @Test

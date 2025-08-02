@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class PaymentFactoryTest {
 
     private static LocalDateTime date;
-    private static Payment payment1 = PaymentFactory.createPayment("PAY-12345","ORD-87546", "CUST-39485", 499.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-298374","1234567812345678", date);
+    private static Payment payment1 = PaymentFactory.createPayment(75469697L,"ORD-87546", "CUST-39485", 499.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-298374","1234567812345678", date);
 
-    private static Payment payment2 = PaymentFactory.createPayment("PAY-24681","ORD-82947", "CUST-30458", 1500.00, PaymentMethod.EFT,  PaymentStatus.PENDING, "TXN-204938","1689479530585312", date);
+    private static Payment payment2 = PaymentFactory.createPayment(75469697L,"ORD-82947", "CUST-30458", 1500.00, PaymentMethod.EFT,  PaymentStatus.PENDING, "TXN-204938","1689479530585312", date);
 
-    private static Payment invalidPayment = PaymentFactory.createPayment("","", "CUST-30458",-1200.00,  null, null,"468894","1223-3749-385",date);
+    private static Payment invalidPayment = PaymentFactory.createPayment(000L,"", "CUST-30458",-1200.00,  null, null,"468894","1223-3749-385",date);
 
 
     @Test

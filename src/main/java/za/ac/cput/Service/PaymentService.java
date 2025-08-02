@@ -21,7 +21,7 @@ public class PaymentService implements IPaymentService{
     }
 
     @Override
-    public Payment read(String paymentId) {
+    public Payment read(Long paymentId) {
         return this.repository.findById(paymentId).orElse(null);
     }
 
@@ -31,7 +31,7 @@ public class PaymentService implements IPaymentService{
     }
 
     @Override
-    public boolean delete(String paymentId) {
+    public boolean delete(Long paymentId) {
         this.repository.deleteById(paymentId);
         return true;
     }

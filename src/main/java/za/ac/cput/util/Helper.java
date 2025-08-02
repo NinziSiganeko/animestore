@@ -26,7 +26,9 @@ public class Helper {
             return email.matches(emailRegex);
         }
 
-
+        public static boolean isValidId(Long paymentId){
+        return paymentId != null && paymentId > 0;
+        }
     public static boolean isValidCard(String cardNumber) {
         if (isNullOrEmpty(cardNumber)) return false;
         return Pattern.matches("^\\d{16}$", cardNumber);
