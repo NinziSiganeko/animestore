@@ -3,16 +3,23 @@ package za.ac.cput.domain;
 //import org.killbill.billing.payment.api.PaymentMethod;
 
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.time.LocalDateTime;
 /*
 *
 * Author S Ninzi(222522569)
 *
 * */
-
+@Entity
 public class Payment {
 
-    private String paymentId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long paymentId;
     private String orderId;
     private String customerId;
     private double amount;
@@ -37,7 +44,7 @@ public class Payment {
 
  }
 
-    public String getPaymentId() {
+    public Long getPaymentId() {
 
         return paymentId;
     }
@@ -90,7 +97,7 @@ public class Payment {
     }
 
     public static class Builder {
-        private String paymentId;
+        private Long paymentId;
         private String orderId;
         private String customerId;
         private double amount;
@@ -99,7 +106,7 @@ public class Payment {
         private PaymentStatus status;
         private String transactionReference;
 
-        public Builder setPaymentId(String paymentId) {
+        public Builder setPaymentId(Long paymentId) {
             this.paymentId = paymentId;
             return this;
         }

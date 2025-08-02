@@ -32,17 +32,9 @@ class PaymentControllerTest {
 
     @BeforeAll
     public static void setUp() {
-        payment = PaymentFactory.createPayment(
-                "PAY-001",
-                "ORD-101",
-                "CUST-9001",
-                999.99,
-                PaymentMethod.CREDIT_CARD,
-                PaymentStatus.COMPLETED,
-                "TXN-0001",
-                "1234567812345678",
-                null
-        );
+        payment = PaymentFactory.createPayment(75469697L, "ORD-101", "CUST-9001",
+                999.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-0001",
+                "1234567812345678", null);
     }
 
     @Test
