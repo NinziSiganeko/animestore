@@ -32,6 +32,7 @@ public class Helper {
         return Pattern.matches("^\\d{16}$", cardNumber);
     }
     public static boolean isValidAmount(double amount) {
+
         return amount > 0;
     }
     public static LocalDateTime getPaymentDate(LocalDateTime paymentDate) {

@@ -38,26 +38,32 @@ public class Payment {
  }
 
     public String getPaymentId() {
+
         return paymentId;
     }
 
     public String getOrderId() {
+
         return orderId;
     }
 
     public String getCustomerId() {
+
         return customerId;
     }
 
     public double getAmount() {
+
         return amount;
     }
 
     public PaymentMethod getMethod() {
+
         return method;
     }
 
     public LocalDateTime getPaymentDate() {
+
         return paymentDate;
     }
 
