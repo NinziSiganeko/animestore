@@ -6,7 +6,7 @@ import za.ac.cput.domain.Customer;
 import za.ac.cput.util.Helper;
 
 public class CustomerFactory {
-        public static Customer createCustomer(int userId, String username, String password, String email, String address, String phoneNumber) {
+        public static Customer createCustomer(Long userId, String username, String password, String email, String address, String phoneNumber) {
             if(Helper.isNullorEmpty(username) ||
                     Helper.isNullorEmpty(password) ||
                     Helper.isNullorEmpty(address) ||
