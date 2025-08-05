@@ -11,42 +11,26 @@ import java.util.List;
 @Service
 public class ProductCategoryServiceImpl implements ProductCategoryService {
 
-    private final ProductCategoryRepository repository;
-
     @Autowired
-    public ProductCategoryServiceImpl(ProductCategoryRepository repository) {
-        this.repository = repository;
-    }
+    private ProductCategoryRepository repository;
 
     @Override
-    public ProductCategory create(ProductCategory category) {
+    public ProductCategory save(ProductCategory category) {
         return repository.save(category);
     }
 
     @Override
-    public ProductCategory read(String categoryId) {
-        return repository.findById(categoryId).orElse(null);
-    }
-
-    @Override
-    public ProductCategory update(ProductCategory category) {
-        if (repository.existsById(category.getCategoryId())) {
-            return repository.save(category);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean delete(String categoryId) {
-        if (repository.existsById(categoryId)) {
-            repository.deleteById(categoryId);
-            return true;
-        }
-        return false;
+    public ProductCategory getById(int id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override
     public List<ProductCategory> getAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public void delete(int id) {
+        repository.deleteById(id);
     }
 }

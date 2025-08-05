@@ -4,9 +4,8 @@ import za.ac.cput.domain.ProductCategory;
 import java.util.List;
 
 public interface ProductCategoryService {
-    ProductCategory create(ProductCategory category);
-    ProductCategory read(String categoryId);
-    ProductCategory update(ProductCategory category);
-    boolean delete(String categoryId);
+    ProductCategory save(ProductCategory category);
+    ProductCategory getById(int id);
     List<ProductCategory> getAll();
+    void delete(int id);
 }
