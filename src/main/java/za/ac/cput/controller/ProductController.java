@@ -2,6 +2,7 @@ package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import za.ac.cput.Service.impl.ProductServiceImpl;
 import za.ac.cput.domain.Product;
 import za.ac.cput.Service.ProductService;
 
@@ -15,6 +16,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    public ProductController(ProductServiceImpl productService) {
+    }
 
     @PostMapping
     public Product create(@RequestBody Product product) {

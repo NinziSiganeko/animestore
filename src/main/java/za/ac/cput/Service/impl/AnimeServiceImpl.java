@@ -7,7 +7,6 @@ import za.ac.cput.Repository.AnimeRepository;
 import za.ac.cput.Service.AnimeService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AnimeServiceImpl implements AnimeService {
@@ -15,7 +14,7 @@ public class AnimeServiceImpl implements AnimeService {
     private final AnimeRepository repository;
 
     @Autowired
-    public AnimeServiceImpl(AnimeRepository repository) {
+    public AnimeServiceImpl() {
         this.repository = repository;
     }
 
