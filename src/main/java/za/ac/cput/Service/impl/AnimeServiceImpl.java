@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class AnimeServiceImpl implements AnimeService {
 
-    private final AnimeRepository repository;
+    private AnimeRepository repository = null;
 
     @Autowired
     public AnimeServiceImpl() {
