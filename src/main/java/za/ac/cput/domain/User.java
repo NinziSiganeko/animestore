@@ -5,8 +5,14 @@
 
 package za.ac.cput.domain;
 
+import jakarta.persistence.*;
+
+@MappedSuperclass
 public abstract class User {
-    protected int userId;
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long userId;
+
     protected String username;
     protected String password;
     protected String email;
@@ -14,14 +20,14 @@ public abstract class User {
     public User() {
     }
 
-    public User(int userId, String username, String password, String email) {
+    public User(Long userId, String username, String password, String email) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
     }
 
-    public int getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
@@ -37,15 +43,6 @@ public abstract class User {
         return email;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 
 
 }
