@@ -31,7 +31,7 @@ public class Customer extends User {
         public String getFirstName() {
             return firstName;
         }
-        public Long getLastName() {
+        public String getLastName() {
             return lastName;
         }
 
@@ -100,7 +100,7 @@ public class Customer extends User {
                 return this;
             }
 
-            public static Builder copy(Customer customer) {
+            public  Builder copy(Customer customer) {
                 this.userId = customer.userId;
                 this.username = customer.username;
                 this.password = customer.password;
