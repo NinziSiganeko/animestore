@@ -49,4 +49,9 @@ public class AnimeServiceImpl implements AnimeService {
     public List<Anime> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Anime getById(String id) {
+        return null;
+    }
 }

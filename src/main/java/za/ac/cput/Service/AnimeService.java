@@ -9,4 +9,6 @@ public interface AnimeService {
     Anime update(Anime anime);
     boolean delete(int animeId);
     List<Anime> getAll();
+
+    Anime getById(String id);
 }
