@@ -25,14 +25,14 @@ class CustomerServiceTest {
 
     @Test
     void b_read() {
-        Customer read = service.read(customer.getLastName());
+        Customer read = service.read(customer.getUserId());
         assertNotNull(read);
         System.out.println(read);
     }
 
     @Test
     void d_update() {
-        Customer customer = Customer.Builder.copy(this.customer).setUsername("john_doe")
+        Customer customer = new Customer.Builder().copy(this.customer).setUsername("john_doe")
                 .build();
         Customer updated = service.update(customer);
         assertNotNull(updated);

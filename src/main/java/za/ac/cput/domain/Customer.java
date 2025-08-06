@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Customer extends User {
+
         private String address;
         private String phoneNumber;
         private String firstName;

@@ -18,6 +18,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public Customer create(Customer customer) {
+
         return this.repository.save(customer);
     }
 
@@ -28,12 +29,14 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public Customer update(Customer customer) {
+
         return this.repository.save(customer);
     }
 
     @Override
-    public void delete(Long id) {
-         this.repository.deleteById(id);
+    public boolean delete(Long id) {
+        this.repository.deleteById(id);
+        return true;
     }
 
     @Override

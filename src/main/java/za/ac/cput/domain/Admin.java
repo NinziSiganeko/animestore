@@ -6,7 +6,6 @@ package za.ac.cput.domain;
 
     public class Admin extends User {
 
-
         public Admin() {}
 
         private Admin(Builder builder) {
@@ -17,7 +16,7 @@ package za.ac.cput.domain;
             this.password = builder.password;
 
         }
-        public int getUserId() {
+        public Long getUserId() {
             return userId;
         }
         public String getUsername() {
@@ -41,12 +40,12 @@ package za.ac.cput.domain;
         }
 
         public static class Builder {
-            protected int userId;
+            protected Long userId;
             protected String username;
             protected String password;
             protected String email;
 
-            public Builder setUserId(int userId) {
+            public Builder setUserId(Long userId) {
                 this.userId = userId;
                 return this;
             }
