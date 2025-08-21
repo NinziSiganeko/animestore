@@ -27,7 +27,7 @@ class ProductControllerTest {
                 .build();
 
         Product product = new Product.Builder()
-                .setProductId("PROD004")
+                .setProductId(Long.valueOf("PROD004"))
                 .setName("Itachi Uchiha T-Shirt")
                 .setPrice(199.99)
                 .setCategory(category)
@@ -43,7 +43,7 @@ class ProductControllerTest {
     @Test
     void testGetById() {
         Product product = new Product.Builder()
-                .setProductId("PROD005")
+                .setProductId(Long.valueOf("PROD005"))
                 .setName("Demon Slayer Mug")
                 .setPrice(59.99)
                 .build();
@@ -57,7 +57,7 @@ class ProductControllerTest {
     @Test
     void testDelete() {
         Product product = new Product.Builder()
-                .setProductId("PROD006")
+                .setProductId(Long.valueOf("PROD006"))
                 .setName("Jujutsu Kaisen Keychain")
                 .setPrice(49.99)
                 .build();

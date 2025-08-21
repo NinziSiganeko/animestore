@@ -27,7 +27,7 @@ class ProductServiceTest {
                 .build();
 
         Product product = new Product.Builder()
-                .setProductId("PROD001")
+                .setProductId(Long.valueOf("PROD001"))
                 .setName("Luffy Action Figure")
                 .setPrice(299.99)
                 .setCategory(category)
@@ -46,7 +46,7 @@ class ProductServiceTest {
                 .build();
 
         Product product = new Product.Builder()
-                .setProductId("PROD002")
+                .setProductId(Long.valueOf("PROD002"))
                 .setName("Naruto Poster")
                 .setPrice(99.99)
                 .setCategory(category)
@@ -62,7 +62,7 @@ class ProductServiceTest {
     @Test
     void testDeleteProduct() {
         Product product = new Product.Builder()
-                .setProductId("PROD003")
+                .setProductId(Long.valueOf("PROD003"))
                 .setName("Zoro Sword")
                 .setPrice(399.99)
                 .build();
