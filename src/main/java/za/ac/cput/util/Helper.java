@@ -41,7 +41,12 @@ public class Helper {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         return now;
     }
-
+    public static boolean isValidRating(int rating) {
+        if (rating < 1 || rating > 5) {
+            return false;
+        }
+        return true;
+    }
 
 
 }

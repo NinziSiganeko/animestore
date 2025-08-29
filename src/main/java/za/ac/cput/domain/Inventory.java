@@ -3,54 +3,86 @@
 //Date: 11 May 2025
 package za.ac.cput.domain;
 
+import jakarta.persistence.*;
+
+import java.util.Objects;
+
+@Entity
 public class Inventory {
-    private int inventoryID;
-    private String location;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long inventoryId;
+
+    @ManyToOne()
+    @JoinColumn(name = "product_product_id")
+    private Product product;
+    private ProductStatus status;
+
+
+
 
     public Inventory() {
     }
-
-    public Inventory(Builder builder) {
-        inventoryID = builder.inventoryID;
-        this.location = builder.location;
+    private Inventory(Builder builder) {
+        this.inventoryId = builder.inventoryId;
+        this.product = builder.product;
+        this.status = builder.status;
     }
 
-    public int getInventoryID() {
-        return inventoryID;
+
+    public Long getInventoryId() {
+        return inventoryId;
     }
 
-    public String getLocation() {
-        return location;
+    public Product getProduct() {
+        return product;
     }
+
+    public ProductStatus getStatus() {
+        return status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Inventory inventory = (Inventory) o;
+        return Objects.equals(inventoryId, inventory.inventoryId) && Objects.equals(product, inventory.product) && status == inventory.status;
+    }
+
 
     @Override
     public String toString() {
         return "Inventory{" +
-                "InventoryID=" + inventoryID +
-                ", location='" + location + '\'' +
+                "inventoryId=" + inventoryId +
+                ", product=" + product +
+                ", status=" + status +
                 '}';
     }
     public static class Builder {
-        private  int inventoryID;
-        private   String location;
+        private Long inventoryId;
+        private Product product;
+        private ProductStatus status;
 
-        public Builder setInventoryID(int inventoryID) {
-            inventoryID = inventoryID;
+        public Builder setInventoryId(Long inventoryId) {
+            this.inventoryId = inventoryId;
+            return this;}
+        public Builder setProduct(Product product) {
+            this.product = product;
             return this;
         }
-
-        public Builder setLocation(String location) {
-            this.location = location;
+        public Builder setStatus(ProductStatus status) {
+            this.status = status;
             return this;
-
         }
         public Builder copy(Inventory inventory) {
-            inventoryID = inventory.getInventoryID();
-            location = inventory.getLocation();
+            this.inventoryId = inventory.inventoryId;
+            this.product = inventory.product;
+            this.status = inventory.status;
             return this;
         }
         public Inventory build() {
             return new Inventory(this);
         }
-    }
-}
+
+
+}}
