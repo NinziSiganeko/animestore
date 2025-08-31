@@ -10,13 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class CustomerFactoryTest {
 
     public static Customer customer1 = CustomerFactory.createCustomer(
-            1L, "John", "Doe", "veronicapuleng91@gmail.com", "123 Main St", "0672345678");
+            "John_Doe", "John", "Doe", "veronicapuleng91@gmail.com", "123 Main St", "0672345678");
 
     public static Customer customer2 = CustomerFactory.createCustomer(
-            2L, "Jane", "Smith", "222914556@mycput.ac.za", "456 Elm St", "0821234567");
+            "Jane_S", "Jane", "Smith", "222914556@mycput.ac.za", "456 Elm St", "0821234567");
 
     public static Customer customer3 = CustomerFactory.createCustomer(
-            0L, "", "", "invalidemail.com", "", ""); // Invalid test
+            "", "", "", "invalidemail.com", "", ""); // Invalid test
 
     @Test
     @Order(1)

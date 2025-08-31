@@ -5,9 +5,10 @@ import za.ac.cput.util.Helper;
 
 public class CustomerFactory {
 
-    public static Customer createCustomer(Long userId, String username, String password, String email, String address, String phoneNumber) {
+    public static Customer createCustomer(String username, String name, String password, String email, String address, String phoneNumber) {
         if (Helper.isNullorEmpty(username) ||
                 Helper.isNullorEmpty(password) ||
+                Helper.isNullorEmpty(name) ||
                 Helper.isNullorEmpty(email) ||
                 Helper.isNullorEmpty(address) ||
                 Helper.isNullorEmpty(phoneNumber)) {
@@ -15,8 +16,8 @@ public class CustomerFactory {
         }
 
         return new Customer.Builder()
-                .setUserId(userId)
                 .setUsername(username)
+                .setFirstName(name)
                 .setPassword(password)
                 .setEmail(email)
                 .setAddress(address)
