@@ -24,7 +24,7 @@ class PaymentFactoryTest2 {
 
     @Test
     void createPayment() {
-        \
+
         assertNotNull(payment1);
         System.out.println(payment1.toString());
     }
