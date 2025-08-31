@@ -15,7 +15,7 @@ public class Anime {
     private String imageUrl;
 
 
-    public Anime() {}
+    protected Anime() {}
 
     public Anime(Builder builder) {
         this.animeId = builder.animeId;
