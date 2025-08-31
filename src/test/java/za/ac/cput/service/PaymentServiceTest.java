@@ -31,6 +31,7 @@ class PaymentServiceTest {
     @BeforeEach
     void setUp() {
         date = LocalDateTime.now().plusDays(21);
+
         payment = PaymentFactory.createPayment("ORD-87546", "CUST-39485", 499.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-298374","1234567812345678", date);
     }
 

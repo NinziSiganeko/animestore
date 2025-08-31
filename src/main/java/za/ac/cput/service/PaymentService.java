@@ -17,16 +17,19 @@ public class PaymentService implements IPaymentService{
 
     @Override
     public Payment create(Payment payment) {
+
         return this.repository.save(payment);
     }
 
     @Override
     public Payment read(Long paymentId) {
+
         return this.repository.findById(paymentId).orElse(null);
     }
 
     @Override
     public Payment update(Payment payment) {
+
         return this.repository.save(payment);
     }
 
@@ -38,6 +41,7 @@ public class PaymentService implements IPaymentService{
 
     @Override
     public List<Payment> getAll() {
+
         return this.repository.findAll();
     }
 

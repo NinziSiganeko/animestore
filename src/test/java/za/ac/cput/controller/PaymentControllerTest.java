@@ -88,6 +88,7 @@ class PaymentControllerTest {
         System.out.println("All Payments:");
         for (Payment p : response.getBody()) {
             System.out.println(p);
+
         }
     }
 }

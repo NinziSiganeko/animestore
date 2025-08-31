@@ -29,6 +29,7 @@ public class Payment {
     private String transactionReference;
 
     protected Payment() {
+
     }
 
  public Payment(Builder builder){
