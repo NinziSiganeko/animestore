@@ -1,21 +1,16 @@
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.Service.CustomerService;
+import za.ac.cput.service.CustomerService;
 import za.ac.cput.domain.Customer;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
 
 
 @RestController
-@RequestMapping("/Customer")
+@RequestMapping("/customer")
 public class CustomerController {
 
     @Autowired
@@ -46,7 +41,6 @@ public class CustomerController {
         return customerService.getAll();
     }
 }
-
 
 
 

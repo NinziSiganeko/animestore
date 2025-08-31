@@ -1,19 +1,22 @@
-package za.ac.cput.Service;
+package za.ac.cput.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import za.ac.cput.domain.Customer;
 import za.ac.cput.factory.CustomerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 
 class CustomerServiceTest {
 
+    @Autowired
     private CustomerService service;
 
     private Customer customer = CustomerFactory.createCustomer(
-            1L, "john_doe", "password123", "veronicapuleng91@gmail.com", "123 Main St", "555-1234");
+            "john_doe", "John", "password123", "veronicapuleng91@gmail.com", "123 Main St", "555-1234");
 
     @Test
     void a_create() {
@@ -25,14 +28,14 @@ class CustomerServiceTest {
 
     @Test
     void b_read() {
-        Customer read = service.read(customer.getUserId());
+        Customer read = service.read(1L);
         assertNotNull(read);
         System.out.println(read);
     }
 
     @Test
     void d_update() {
-        Customer customer = new Customer.Builder().copy(this.customer).setUsername("john_doe")
+        Customer customer = new Customer.Builder().copy(this.customer).setUsername("john_doe2")
                 .build();
         Customer updated = service.update(customer);
         assertNotNull(updated);
@@ -43,5 +46,5 @@ class CustomerServiceTest {
     @Test
     void getAll() {
         System.out.println(service.getAll());
-        }
     }
+}
