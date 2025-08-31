@@ -5,9 +5,11 @@
 
 package za.ac.cput.domain;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
+@DiscriminatorValue("Customer")
 public class Customer extends User {
 
         private String address;
@@ -15,10 +17,13 @@ public class Customer extends User {
         private String firstName;
         private String lastName;
 
-        public Customer() {}
+        protected Customer() {}
 
         private Customer(Builder builder) {
-            super(builder.userId, builder.username, builder.password, builder.email);
+            this.userId = builder.userId;
+            this.username = builder.username;
+            this.password = builder.password;
+            this.email = builder.email;
             this.address = builder.address;
             this.phoneNumber = builder.phoneNumber;
             this.firstName = builder.firstName;
