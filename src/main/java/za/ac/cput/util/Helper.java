@@ -42,6 +42,12 @@ public class Helper {
         return now;
     }
 
+    public static boolean isValidRating(int rating) {
+        if (rating < 1 || rating > 5) {
+            return false;
+        }
+        return true;
+    }
 
 
 }
