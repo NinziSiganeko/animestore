@@ -1,9 +1,12 @@
 package za.ac.cput.service;
 
-import za.ac.cput.domain.Payment;
+public interface IService <T,ID>{
+    T create(T t);
 
-import java.util.List;
+    T read(ID id);
 
-public interface IService {
-    List<Payment> getAll();
+    T update(T t);
+
+    boolean delete(ID id);
+
 }
