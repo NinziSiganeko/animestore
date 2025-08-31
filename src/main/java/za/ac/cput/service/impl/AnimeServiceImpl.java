@@ -40,7 +40,7 @@ public class AnimeServiceImpl implements AnimeService {
     @Override
     public boolean delete(int animeId) {
 //        if (repository.existsById(animeId)) {
-        repository.deleteById(animeId);
+            repository.deleteById(animeId);
 //            return true;
 //        }
         return !repository.existsById(animeId);
