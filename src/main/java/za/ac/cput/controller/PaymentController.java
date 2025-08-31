@@ -3,7 +3,7 @@ package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.Service.PaymentService;
+import za.ac.cput.service.PaymentService;
 import za.ac.cput.domain.Payment;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class PaymentController {
         return this.service.read(paymentId);
     }
 
-    @PutMapping("/update")
+    @PostMapping("/update")
     public Payment update(@RequestBody Payment payment) {
         return this.service.update(payment);
     }

@@ -9,8 +9,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class PaymentFactory {
-    public static Payment createPayment(Long paymentId, String orderId, String customerId, double amount, PaymentMethod method, PaymentStatus status,String transactionReference, String cardNumber, LocalDateTime paymentDate){
-        if (Helper.isValidId(paymentId) || Helper.isNullOrEmpty(orderId)
+    public static Payment createPayment(
+            //Long paymentId,
+            String orderId, String customerId, double amount, PaymentMethod method, PaymentStatus status,String transactionReference, String cardNumber, LocalDateTime paymentDate){
+        if (
+                //!Helper.isValidId(paymentId) ||
+                        Helper.isNullOrEmpty(orderId)
                 || Helper.isNullOrEmpty(customerId)
                 || !Helper.isValidAmount(amount) || method == null || status == null
                 || Helper.isNullOrEmpty(transactionReference))
@@ -25,7 +29,7 @@ public class PaymentFactory {
         LocalDateTime date = Helper.getPaymentDate(paymentDate);
 
         return new Payment.Builder()
-                .setPaymentId(paymentId)
+               // .setPaymentId(paymentId)
                 .setOrderId(orderId)
                 .setCustomerId(customerId)
                 .setAmount(amount)

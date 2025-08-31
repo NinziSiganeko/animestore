@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentId;
     private String orderId;
     private String customerId;
@@ -28,7 +28,7 @@ public class Payment {
     private PaymentStatus status;
     private String transactionReference;
 
-    public Payment() {
+    protected Payment() {
     }
 
  public Payment(Builder builder){

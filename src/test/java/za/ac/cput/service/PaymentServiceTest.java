@@ -1,5 +1,6 @@
-package za.ac.cput.Service;
+package za.ac.cput.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -23,9 +24,19 @@ class PaymentServiceTest {
     @Autowired
     private IPaymentService service;
 
-    private static Payment payment = PaymentFactory.createPayment(75469697L, "ORD-101", "CUST-9001",
-                                    1299.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-0001",
-                                    "1234567812345678", LocalDateTime.now());
+    private static LocalDateTime date;
+
+    private Payment payment;
+
+    @BeforeEach
+    void setUp() {
+        date = LocalDateTime.now().plusDays(21);
+        payment = PaymentFactory.createPayment("ORD-87546", "CUST-39485", 499.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-298374","1234567812345678", date);
+    }
+
+//    private static final Payment payment = PaymentFactory.createPayment(1L, "ORD-101", "CUST-9001",
+//                                    1299.99, PaymentMethod.CREDIT_CARD, PaymentStatus.COMPLETED, "TXN-0001",
+//                                    "1234567812345678", LocalDateTime.now());
 
     @Test
     void a_create() {
@@ -36,7 +47,7 @@ class PaymentServiceTest {
 
     @Test
     void b_read() {
-        Payment read = service.read(payment.getPaymentId());
+        Payment read = service.read(1L);
         assertNotNull(read);
         System.out.println("Read: " + read);
     }
@@ -55,7 +66,7 @@ class PaymentServiceTest {
 
     @Test
     void d_delete() {
-        boolean deleted = service.delete(payment.getPaymentId());
+        boolean deleted = service.delete(2L);
         assertTrue(deleted);
         System.out.println("Deleted: " + true);
     }

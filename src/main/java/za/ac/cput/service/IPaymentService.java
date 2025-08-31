@@ -1,4 +1,4 @@
-package za.ac.cput.Service;
+package za.ac.cput.service;
 
 import za.ac.cput.domain.Payment;
 
