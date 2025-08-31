@@ -1,129 +1,107 @@
-//Review POJO class
-//Author :S Mzaza(220030898)
-//Date: 07 May 2025
 package za.ac.cput.domain;
-import java.time.LocalDate;
 
-public class   Review {
-    private int reviewID;
-    private int productID;
-    private int userID;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+@Entity
+public class Review {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reviewId;
+
     private int rating;
     private String comment;
-    private LocalDate reviewDate;
-    private boolean isApproved;
+    public LocalDate reviewDate;
+
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer user;
 
     public Review() {
     }
-
     public Review(Builder builder) {
-        this.reviewID = builder.reviewID;
-        this.productID = builder.productID;
-        this.userID = builder.userID;
+        this.reviewId = builder.reviewId;
         this.rating = builder.rating;
         this.comment = builder.comment;
         this.reviewDate = builder.reviewDate;
-        this.isApproved = builder.isApproved;
+        this.product = builder.product;
+        this.user = builder.user;
     }
-
-    public int getReviewID() {
-        return reviewID;
+    public Long getReviewId() {
+        return reviewId;
     }
-
-    public int getProductID() {
-        return productID;
-    }
-
-    public int getUserID() {
-        return userID;
-    }
-
     public int getRating() {
         return rating;
     }
-
     public String getComment() {
         return comment;
     }
-
     public LocalDate getReviewDate() {
         return reviewDate;
     }
-
-    public boolean isApproved() {
-        return isApproved;
+    public Product getProduct() {
+        return product;
     }
-
+    public Customer getUser() {
+        return user;
+    }
     @Override
     public String toString() {
         return "Review{" +
-                "reviewID=" + reviewID +
-                ", productID=" + productID +
-                ", userID=" + userID +
+                "reviewId=" + reviewId +
                 ", rating=" + rating +
                 ", comment='" + comment + '\'' +
                 ", reviewDate=" + reviewDate +
-                ", isApproved=" + isApproved +
+                ", product=" + product +
+                ", user=" + user +
                 '}';
     }
+
     public static class Builder {
-        private int reviewID;
-        private int productID;
-        private int userID;
+        private Long reviewId;
         private int rating;
         private String comment;
         private LocalDate reviewDate;
-        private boolean isApproved;
+        private Product product;
+        private Customer user;
 
-
-        public Builder setReviewID(int reviewID) {
-            this.reviewID = reviewID;
-            return this;
+        public Builder setReviewId(Long reviewId) {
+            this.reviewId = reviewId; return this;
         }
-
-        public Builder setProductID(int productID) {
-            this.productID = productID;
-            return this;
-        }
-
-        public Builder setUserID(int userID) {
-            this.userID = userID;
-            return this;
-        }
-
         public Builder setRating(int rating) {
-            this.rating = rating;
-            return this;
+            this.rating = rating; return this;
         }
-
         public Builder setComment(String comment) {
-            this.comment = comment;
-            return this;
+            this.comment = comment; return this;
         }
-
         public Builder setReviewDate(LocalDate reviewDate) {
-            this.reviewDate = reviewDate;
-            return this;
+            this.reviewDate = reviewDate; return this;
         }
-
-        public Builder setApproved(boolean approved) {
-            isApproved = approved;
-            return this;
+        public Builder setProduct(Product product) {
+            this.product = product; return this;
+        }
+        public Builder setUser(Customer user) {
+            this.user = user; return this;
         }
         public Builder copy(Review review) {
-            this.reviewID = review.getReviewID();
-            this.productID = review.getProductID();
-            this.userID = review.getUserID();
-            this.rating = review.getRating();
-            this.comment = review.getComment();
-            this.reviewDate = review.getReviewDate();
-            this.isApproved = review.isApproved();
+            this.reviewId = review.reviewId;
+            this.rating = review.rating;
+            this.comment = review.comment;
+            this.reviewDate = review.reviewDate;
+            this.product = review.product;
+            this.user = review.user;
             return this;
         }
+
         public Review build() {
             return new Review(this);
         }
-
     }
+
 
 }
