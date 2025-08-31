@@ -1,4 +1,4 @@
-package za.ac.cput.Service;
+package za.ac.cput.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,17 +8,13 @@ import za.ac.cput.domain.Customer;
 import java.util.List;
 import za.ac.cput.repository.CustomerRepository;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @Service
 public class CustomerService implements ICustomerService {
     @Autowired
-
     private  CustomerRepository repository;
 
     @Override
     public Customer create(Customer customer) {
-
         return this.repository.save(customer);
     }
 
