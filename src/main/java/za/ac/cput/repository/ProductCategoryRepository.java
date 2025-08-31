@@ -1,4 +1,9 @@
 package za.ac.cput.repository;
 
-public class ProductCategoryRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import za.ac.cput.domain.ProductCategory;
+
+@Repository
+public interface ProductCategoryRepository extends JpaRepository<ProductCategory, String> {
 }
