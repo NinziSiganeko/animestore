@@ -2,38 +2,42 @@ package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.service.impl.ProductServiceImpl;
 import za.ac.cput.domain.Product;
-import za.ac.cput.service.ProductService;
-
+import za.ac.cput.repository.ProductRepository;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/product")
-@CrossOrigin(origins = "http://localhost:3000") // React app address
+@RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:5173") // React frontend
 public class ProductController {
 
     @Autowired
-    private ProductService productService;
+    private ProductRepository productRepository;
 
-    @PostMapping("/save")
-    public Product create(@RequestBody Product product) {
-        return productService.save(product);
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
-    @GetMapping("/getAll")
-    public List<Product> getAll() {
-        return productService.getAll();
+    @GetMapping("/{id}")
+    public Product getProduct(@PathVariable String id) {
+        return productRepository.findById(id).orElse(null);
     }
 
-    @GetMapping("/read/{id}")
-    public Product getById(@PathVariable String id) {
-        return productService.getById(id);
+    @PostMapping
+    public Product createProduct(@RequestBody Product product) {
+        return productRepository.save(product);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable String id) {
-        productService.delete(id);
+    @PutMapping("/{id}")
+    public Product updateProduct(@PathVariable String id, @RequestBody Product product) {
+        if (!productRepository.existsById(id)) return null;
+        return productRepository.save(product);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable String id) {
+        productRepository.deleteById(id);
     }
 }
