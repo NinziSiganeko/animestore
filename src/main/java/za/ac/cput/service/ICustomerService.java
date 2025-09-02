@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface ICustomerService extends IService<Customer, Long> {
         List<Customer> getAll();
-
         //Optional<Customer> findByEmail(String email);
        // List<Customer> findAllByFirstName(String firstName);
        // List<Customer> findAllByLastName(String lastName);

@@ -1,16 +1,18 @@
 package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import za.ac.cput.service.CustomerService;
 import za.ac.cput.domain.Customer;
 
-
 import java.util.List;
-
+import java.util.Map;
 
 @RestController
 @RequestMapping("/customer")
+@CrossOrigin(origins = "http://localhost:5173") // React app URL
 public class CustomerController {
 
     @Autowired
@@ -18,11 +20,16 @@ public class CustomerController {
 
     @PostMapping("/create")
     public Customer create(@RequestBody Customer customer) {
-        return customerService.create(customer);
+        try {
+            return customerService.create(customer);
+        } catch (Exception e) {
+            System.out.println("Error creating customer: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
-    @GetMapping("/read/{CustomerId}")
-    public Customer read(@PathVariable Long customerId){
+    @GetMapping("/read/{customerId}")
+    public Customer read(@PathVariable Long customerId) {
         return customerService.read(customerId);
     }
 
@@ -32,17 +39,34 @@ public class CustomerController {
     }
 
     @DeleteMapping("/delete/{customerId}")
-    public void delete(@PathVariable Long customerId){
+    public void delete(@PathVariable Long customerId) {
         customerService.delete(customerId);
     }
 
     @GetMapping("/getAll")
-    public List<Customer> getAll(){
+    public List<Customer> getAll() {
         return customerService.getAll();
     }
+
+    @PostMapping("/signin")
+    public Map<String, String> signIn(@RequestBody Map<String, String> credentials) {
+        String email = credentials.get("email");
+        String password = credentials.get("password");
+
+        Customer customer = customerService.findByEmail(email);
+
+        if (customer != null && customer.getPassword().equals(password)) {
+            // Return a simple token (customer ID as string) and success message
+            return Map.of(
+                    "token", String.valueOf(customer.getUserId()),
+                    "message", "Login successful"
+            );
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+    }
+
 }
-
-
 
 
 
