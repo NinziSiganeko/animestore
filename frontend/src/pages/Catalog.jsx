@@ -27,7 +27,7 @@ function Catalog() {
 
     return (
         <div className="container py-5">
-            <h1 className="text-center fw-bold mb-4">🛍️ Our Catalog</h1>
+            <h1 className="text-center fw-bold mb-4">Our Catalog</h1>
 
             {/* Filters */}
             <div className="d-flex flex-wrap justify-content-center gap-3 mb-4">
