@@ -5,34 +5,78 @@ import { useNavigate } from "react-router-dom";
 function Checkout() {
     const { cart, clearCart } = useCart();
     const [loading, setLoading] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState("");
+    const [paymentDetails, setPaymentDetails] = useState({});
     const navigate = useNavigate();
 
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-    const handleSubmit = (e) => {
+    const handlePaymentChange = (e) => {
+        setPaymentMethod(e.target.value);
+        setPaymentDetails({}); // reset when switching method
+    };
+
+    const handleDetailChange = (e) => {
+        setPaymentDetails({
+            ...paymentDetails,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        // simulate order placement (later you’ll call backend API here)
-        setTimeout(() => {
-            setLoading(false);
-
-            // ✅ redirect to success page with order details
-            navigate("/order-success", {
-                state: {
-                    items: cart,
-                    total,
-                },
+        try {
+            const response = await fetch("http://localhost:8080/payment/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    orderId: null,
+                    customerId: null,
+                    amount: total,
+                    method:
+                        paymentMethod === "DEBIT_CARD"
+                            ? "CREDIT_CARD"
+                            : paymentMethod === "eft"
+                                ? "EFT"
+                                : "PAYPAL",
+                    paymentDate: new Date().toISOString(),
+                    status: "PENDING",
+                    transactionReference:
+                        paymentDetails.transactionReference ||
+                        paymentDetails.cardNumber ||
+                        paymentDetails.accountNumber ||
+                        "TEMP_TXN"
+                }),
             });
+            if (response.ok) {
+                const data = await response.json();
 
-            // ✅ clear cart ONLY after navigating
-            clearCart();
-        }, 1500);
+
+                navigate("/OrderSuccess", {
+                    state: {
+                        items: cart,
+                        total,
+                        payment: data,
+                    },
+                });
+
+                clearCart();
+            } else {
+                alert("Payment failed ");
+            }
+        } catch (err) {
+            console.error("Error creating payment:", err);
+            alert("Error processing payment");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="container py-5">
-            <h2 className="fw-bold mb-4">🛒 Checkout</h2>
+            <h2 className="fw-bold mb-4"> Checkout</h2>
 
             <div className="row">
                 {/* Order Summary */}
@@ -80,16 +124,48 @@ function Checkout() {
 
                                 <div className="mb-3">
                                     <label className="form-label">Payment Method</label>
-                                    <select className="form-select" required>
+                                    <select
+                                        className="form-select"
+                                        value={paymentMethod}
+                                        onChange={handlePaymentChange}
+                                        required
+                                    >
                                         <option value="">Select...</option>
                                         <option value="card">Credit / Debit Card</option>
                                         <option value="eft">EFT / Bank Transfer</option>
-                                        <option value="cod">Cash on Delivery</option>
                                     </select>
                                 </div>
 
+                                {/* Dynamic Payment Fields */}
+                                {paymentMethod === "card" && (
+                                    <div className="mb-3">
+                                        <label className="form-label">Card Number</label>
+                                        <input type="text" name="cardNumber" className="form-control" onChange={handleDetailChange} required />
+                                        <label className="form-label mt-2">Expiry Date</label>
+                                        <input type="text" name="expiryDate" className="form-control" placeholder="MM/YY" onChange={handleDetailChange} required />
+                                        <label className="form-label mt-2">CVV</label>
+                                        <input type="text" name="cvv" className="form-control" onChange={handleDetailChange} required />
+                                    </div>
+                                )}
+
+                                {paymentMethod === "eft" && (
+                                    <div className="mb-3">
+                                        <label className="form-label">Bank Name</label>
+                                        <input type="text" name="bankName" className="form-control" onChange={handleDetailChange} required />
+                                        <label className="form-label mt-2">Account Number</label>
+                                        <input type="text" name="accountNumber" className="form-control" onChange={handleDetailChange} required />
+                                    </div>
+                                )}
+
+                                {paymentMethod === "paypal" && (
+                                    <div className="mb-3">
+                                        <label className="form-label">PayPal Email</label>
+                                        <input type="email" name="paypalEmail" className="form-control" onChange={handleDetailChange} required />
+                                    </div>
+                                )}
+
                                 <button type="submit" className="btn btn-dark w-100" disabled={loading}>
-                                    {loading ? "Placing Order..." : "Place Order"}
+                                    {loading ? "Processing..." : "Place Order"}
                                 </button>
                             </form>
                         </div>

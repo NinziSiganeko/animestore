@@ -29,10 +29,10 @@ public class Helper {
     public static boolean isValidId(Long paymentId){
         return paymentId != null && paymentId > 0;
     }
-    public static boolean isValidCard(String cardNumber) {
-        if (isNullOrEmpty(cardNumber)) return false;
-        return Pattern.matches("^\\d{16}$", cardNumber);
-    }
+//    public static boolean isValidCard(String cardNumber) {
+//        if (isNullOrEmpty(cardNumber)) return false;
+//        return Pattern.matches("^\\d{16}$", cardNumber);
+//    }
     public static boolean isValidAmount(double amount) {
 
         return amount > 0;
@@ -47,6 +47,15 @@ public class Helper {
             return false;
         }
         return true;
+    }
+
+    public static boolean isValidCard(String cardNumber) {
+        return cardNumber != null && cardNumber.matches("\\d{13,19}");
+    }
+
+
+    public static boolean isValidBankAccount(String account) {
+        return account != null && account.matches("\\d{6,20}");
     }
 
 

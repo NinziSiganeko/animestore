@@ -1,10 +1,10 @@
 package za.ac.cput.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.service.PaymentService;
 import za.ac.cput.domain.Payment;
+import za.ac.cput.service.PaymentService;
 
 import java.util.List;
 
@@ -12,8 +12,7 @@ import java.util.List;
 @RequestMapping("/payment")
 public class PaymentController {
 
-
-    private PaymentService service;
+    private final PaymentService service;
 
     @Autowired
     public PaymentController(PaymentService service) {
@@ -21,27 +20,36 @@ public class PaymentController {
     }
 
     @PostMapping("/create")
-    public Payment create(@RequestBody Payment payment) {
-        return service.create(payment);
+    public ResponseEntity<?> create(@RequestBody Payment payment) {
+        Payment created = service.create(payment);
+        if (created != null) {
+            return ResponseEntity.ok(created);
+        } else {
+            return ResponseEntity.badRequest().body("Invalid payment details.");
+        }
     }
 
     @GetMapping("/read/{paymentId}")
     public Payment read(@PathVariable Long paymentId) {
+
         return this.service.read(paymentId);
     }
 
     @PostMapping("/update")
     public Payment update(@RequestBody Payment payment) {
+
         return this.service.update(payment);
     }
 
     @DeleteMapping("/delete/{paymentId}")
     public boolean delete(@PathVariable Long paymentId) {
+
         return service.delete(paymentId);
     }
 
     @GetMapping("/getAll")
     public List<Payment> getAll() {
+
         return this.service.getAll();
     }
 }
