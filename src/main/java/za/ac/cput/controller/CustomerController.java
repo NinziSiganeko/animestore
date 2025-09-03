@@ -47,6 +47,7 @@ public class CustomerController {
     public List<Customer> getAll() {
         return customerService.getAll();
     }
+
     @PostMapping("/signin")
     public Map<String, String> signIn(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email").trim();

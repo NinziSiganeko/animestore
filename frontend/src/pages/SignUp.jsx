@@ -96,6 +96,7 @@ function SignUp() {
                 <p className="text-center mt-3">
                     Already have an account? <Link to="/signin" className="text-primary">Sign In</Link>
                 </p>
+
             </form>
         </div>
     );

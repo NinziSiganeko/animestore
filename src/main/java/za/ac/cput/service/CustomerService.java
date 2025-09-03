@@ -42,6 +42,7 @@ public class CustomerService implements ICustomerService {
         return this.repository.findAll();
     }
 
+
     public Customer findByEmail(String email) {
         return repository.findByEmailIgnoreCase(email.trim()).orElse(null);
     }
