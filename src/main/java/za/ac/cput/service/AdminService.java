@@ -3,6 +3,7 @@ package za.ac.cput.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Admin;
+import za.ac.cput.domain.Customer;
 import za.ac.cput.repository.AdminRepository;
 
 import java.util.List;
@@ -39,4 +40,10 @@ public class AdminService implements IAdminService{
     public List<Admin> getAll() {
         return this.repository.findAll();
     }
+
+
+    public Admin findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
 }
+

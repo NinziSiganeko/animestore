@@ -1,12 +1,19 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { NavLink, Outlet } from "react-router-dom";
-import { useCart } from "../context/CartContext"; //
-// 👈 import cart hook
+import { NavLink, useNavigate, Outlet } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 function MainLayout() {
     const { cart } = useCart();
     const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+    const navigate = useNavigate();
+
+    const isUser = !!localStorage.getItem("userToken");
+
+    const handleLogout = () => {
+        localStorage.removeItem("userToken");
+        navigate("/signin");
+    };
 
     return (
         <div>
@@ -28,7 +35,6 @@ function MainLayout() {
 
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav ms-auto align-items-lg-center">
-
                             {/* Home */}
                             <li className="nav-item mx-2">
                                 <NavLink
@@ -54,8 +60,6 @@ function MainLayout() {
                                 </NavLink>
                             </li>
 
-
-
                             {/* Cart */}
                             <li className="nav-item mx-2">
                                 <NavLink
@@ -70,45 +74,57 @@ function MainLayout() {
                                             className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
                                             style={{ fontSize: "0.75rem" }}
                                         >
-                                            {cartCount}
-                                        </span>
+                      {cartCount}
+                    </span>
                                     )}
                                 </NavLink>
                             </li>
 
-                            {/* Sign In */}
-                            <li className="nav-item mx-2">
-                                <NavLink
-                                    to="/signin"
-                                    className={({ isActive }) =>
-                                        `btn btn-outline-light btn-sm ${isActive ? "border-warning text-warning" : ""}`
-                                    }
-                                >
-                                    <i className="bi bi-box-arrow-in-right me-1"></i> Sign In
-                                </NavLink>
-                            </li>
+                            {/* User not logged in */}
+                            {!isUser && (
+                                <>
+                                    <li className="nav-item mx-2">
+                                        <NavLink
+                                            to="/signin"
+                                            className={({ isActive }) =>
+                                                `btn btn-outline-light btn-sm ${isActive ? "border-warning text-warning" : ""}`
+                                            }
+                                        >
+                                            <i className="bi bi-box-arrow-in-right me-1"></i> Sign In
+                                        </NavLink>
+                                    </li>
 
-                            {/* Sign Up */}
-                            <li className="nav-item mx-2">
-                                <NavLink
-                                    to="/signup"
-                                    className={({ isActive }) =>
-                                        `btn btn-warning btn-sm ${isActive ? "fw-bold shadow" : ""}`
-                                    }
-                                >
-                                    <i className="bi bi-person-plus me-1"></i> Sign Up
-                                </NavLink>
-                            </li>
-                            <li className="nav-item mx-2">
-                                <NavLink
-                                    to="admin/dashboard"
-                                    className={({ isActive }) => `nav-link ${isActive ? "text-warning fw-bold" : ""}`}
-                                >
-                                    <i className="bi bi-person-circle me-1"></i> Dashboard
-                                </NavLink>
-                            </li>
+                                    <li className="nav-item mx-2">
+                                        <NavLink
+                                            to="/signup"
+                                            className={({ isActive }) =>
+                                                `btn btn-warning btn-sm ${isActive ? "fw-bold shadow" : ""}`
+                                            }
+                                        >
+                                            <i className="bi bi-person-plus me-1"></i> Sign Up
+                                        </NavLink>
+                                    </li>
+                                </>
+                            )}
 
-
+                            {/* User logged in */}
+                            {isUser && (
+                                <>
+                                    <li className="nav-item mx-2">
+                                        <NavLink
+                                            to="/dashboard"
+                                            className={({ isActive }) => `nav-link ${isActive ? "text-warning fw-bold" : ""}`}
+                                        >
+                                            <i className="bi bi-person-circle me-1"></i> Dashboard
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item mx-2">
+                                        <button className="btn btn-danger btn-sm" onClick={handleLogout}>
+                                            <i className="bi bi-box-arrow-right me-1"></i> Logout
+                                        </button>
+                                    </li>
+                                </>
+                            )}
                         </ul>
                     </div>
                 </div>
@@ -121,3 +137,4 @@ function MainLayout() {
 }
 
 export default MainLayout;
+
