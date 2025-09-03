@@ -10,6 +10,7 @@ import Success from "./pages/Success";
 import Designs from "./pages/Designs";
 import ProductDetail from "./pages/ProductDetail";
 import UserDashboard from "./pages/UserDashboard";
+import AdminDashboard from "./pages/adminDashboard";
 
 // Simplified PrivateRoute for customers only
 function PrivateRoute({ children }) {
@@ -31,6 +32,7 @@ function App() {
                 <Route path="success" element={<Success />} />
                 <Route path="designs" element={<Designs />} />
                 <Route path="product/:id" element={<ProductDetail />} />
+                <Route path="admin/dashboard" element={<AdminDashboard />} />
 
                 {/* Protected route for logged-in customers only */}
                 <Route
