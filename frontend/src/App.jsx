@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Catalog from "./pages/Catalog";
@@ -9,11 +9,13 @@ import Checkout from "./pages/Checkout";
 import Success from "./pages/Success";
 import Designs from "./pages/Designs";
 import ProductDetail from "./pages/ProductDetail";
-import AdminDashboard from "./pages/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard";
-import OrderSuccess from "./pages/OrderSuccess";
 
-
+// Simplified PrivateRoute for customers only
+function PrivateRoute({ children }) {
+    const token = localStorage.getItem("userToken");
+    return token ? children : <Navigate to="/signin" />;
+}
 
 function App() {
     return (
@@ -26,16 +28,23 @@ function App() {
                 <Route path="signup" element={<SignUp />} />
                 <Route path="checkout" element={<Checkout />} />
                 <Route path="success" element={<Success />} />
-                <Route path="/designs" element={<Designs />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/dashboard" element={<UserDashboard />} />
-                <Route path="/order-success" element={<OrderSuccess />} />
+                <Route path="designs" element={<Designs />} />
+                <Route path="product/:id" element={<ProductDetail />} />
 
+                {/* Protected route for logged-in customers only */}
+                <Route
+                    path="dashboard"
+                    element={
+                        <PrivateRoute>
+                            <UserDashboard />
+                        </PrivateRoute>
+                    }
+                />
             </Route>
         </Routes>
     );
 }
 
 export default App;
+
+

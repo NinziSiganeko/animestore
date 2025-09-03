@@ -4,15 +4,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import za.ac.cput.domain.Customer;
 
-import java.util.List;
+import java.util.Optional;
+
 @Repository
-
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    // Find email ignoring case
+    Optional<Customer> findByEmailIgnoreCase(String email);
 
-    List<Customer> findAll();
-
-    //  List<Customer> findAllByFirstName(String firstName);
-    // List<Customer> findAllByLastName(String lastName);
-    //  List<Customer> findByFirstNameAndLastName(String firstName, String lastName);
-    // Optional<Customer> findByEmail(String email);
 }
+
+
+
+

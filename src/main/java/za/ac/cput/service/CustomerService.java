@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Customer;
 
 import java.util.List;
+import java.util.Optional;
+
 import za.ac.cput.repository.CustomerRepository;
 
 @Service
@@ -40,6 +42,13 @@ public class CustomerService implements ICustomerService {
         return this.repository.findAll();
     }
 
-
+    public Customer findByEmail(String email) {
+        return repository.findByEmailIgnoreCase(email.trim()).orElse(null);
+    }
 
 }
+
+
+
+
+
