@@ -10,12 +10,13 @@ function SignUp() {
         const username = e.target.name.value;
         const email = e.target.email.value.toLowerCase();
         const password = e.target.password.value;
+        //add shorting fields here
 
         try {
             const res = await fetch("http://localhost:8080/api/auth/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({ username, email, password /*khl shorting fields here*/ }),
             });
 
             if (!res.ok) {
@@ -46,7 +47,7 @@ function SignUp() {
                     <label className="form-label">Password</label>
                     <input name="password" type="password" className="form-control" placeholder="Create a password" required />
                 </div>
-
+                {/*CREATE div for additional fields*/}
                 {error && <p className="text-danger">{error}</p>}
 
                 <button type="submit" className="btn btn-dark w-100 mt-3">Sign Up</button>
