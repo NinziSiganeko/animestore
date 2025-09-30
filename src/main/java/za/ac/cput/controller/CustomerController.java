@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import za.ac.cput.service.CustomerService;
 import za.ac.cput.domain.Customer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,24 +54,21 @@ public class CustomerController {
         String email = credentials.get("email").trim();
         String password = credentials.get("password").trim();
 
-        // Find user by email (case-insensitive)
         Customer customer = customerService.findByEmail(email);
 
         if (customer != null && customer.getPassword().trim().equals(password)) {
-            // Login successful → return token
             return Map.of(
                     "token", String.valueOf(customer.getCustomerId()),
-                    "message", "Login successful"
+                    "firstName", customer.getFirstName(),
+                    "lastName", customer.getLastName()
             );
         }
 
-        // Login failed → React will handle error
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
     }
 
-
-
 }
+
 
 
 
