@@ -2,58 +2,73 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function SignIn() {
-    const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const email = e.target.email.value.toLowerCase();
-        const password = e.target.password.value;
+        setError("");
 
         try {
-            const res = await fetch("http://localhost:8080/api/auth/signin", {
+            const response = await fetch("http://localhost:8080/customer/signin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
 
-            const data = await res.json();
-            if (!res.ok) {
-                setError(data.error || "Signin failed");
-                return;
-            }
+            const data = await response.json();
+            console.log("Backend response:", data, "status:", response.status);
 
-            // Redirect based on role
-            if (data.role.toLowerCase() === "admin") {
-                navigate("/adminDashboard");
+            if (response.ok) {
+                const fullName = data.firstName + " " + data.lastName;
+                localStorage.setItem("userToken", data.token);
+                localStorage.setItem("userName", fullName); // store full name
+                navigate("/");
+                // redirect to Home
             } else {
-                navigate("/"); // Home.jsx
+                // Show error returned from backend
+                setError(data.message || "Invalid credentials");
             }
-
         } catch (err) {
-            console.error(err);
-            setError("Something went wrong. Try again.");
+            setError("Network error. Please try again later.");
         }
     };
 
     return (
-        <div className="container py-5" style={{ maxWidth: "500px" }}>
-            <h2 className="fw-bold mb-4 text-center"> Sign In</h2>
+        <div className="container py-5" style={{ maxWidth: "400px" }}>
+            <h2 className="fw-bold mb-4 text-center">Sign In</h2>
+
+            {error && <div className="alert alert-danger">{error}</div>}
+
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label className="form-label">Email</label>
-                    <input name="email" type="email" className="form-control" placeholder="Enter your email" required />
+                    <input
+                        type="email"
+                        className="form-control"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
                 </div>
+
                 <div className="mb-3">
                     <label className="form-label">Password</label>
-                    <input name="password" type="password" className="form-control" placeholder="Enter your password" required />
+                    <input
+                        type="password"
+                        className="form-control"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
                 </div>
 
-                {error && <p className="text-danger">{error}</p>}
+                <button type="submit" className="btn btn-warning w-100">Sign In</button>
 
-                <button type="submit" className="btn btn-dark w-100 mt-3">Sign In</button>
                 <p className="text-center mt-3">
-                    Don’t have an account? <a href="/signup" className="text-primary">Sign Up</a>
+                    Don't have an account? <a href="/signup" className="text-primary">Sign Up</a>
                 </p>
             </form>
         </div>
@@ -61,3 +76,12 @@ function SignIn() {
 }
 
 export default SignIn;
+
+
+
+
+
+
+
+
+
