@@ -14,7 +14,7 @@ public class Inventory {
     private Long inventoryId;
 
     @ManyToOne
-    @JoinColumn(name = "product_product_id")
+    @JoinColumn(name = "product_id")
     private Product product;
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
