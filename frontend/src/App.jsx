@@ -18,10 +18,10 @@ function PrivateRoute({ children }) {
     return token ? children : <Navigate to="/signin" />;
 }
 
-// Optional: AdminRoute if you implement roles later
+// Admin-only route
 function AdminRoute({ children }) {
     const token = localStorage.getItem("userToken");
-    const role = localStorage.getItem("userRole"); // you can save role on signin
+    const role = localStorage.getItem("userRole");
     return token && role === "Admin" ? children : <Navigate to="/signin" />;
 }
 
@@ -67,6 +67,3 @@ function App() {
 }
 
 export default App;
-
-
-

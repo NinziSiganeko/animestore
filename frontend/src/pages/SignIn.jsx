@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function SignIn() {
@@ -6,6 +6,18 @@ function SignIn() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+
+    // 🔹 Auto-redirect if already signed in
+    useEffect(() => {
+        const token = localStorage.getItem("userToken");
+        const role = localStorage.getItem("userRole");
+
+        if (token && role === "Admin") {
+            navigate("/admin/dashboard");
+        } else if (token && role === "Customer") {
+            navigate("/dashboard");
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,11 +36,17 @@ function SignIn() {
             if (response.ok) {
                 const fullName = data.firstName + " " + data.lastName;
                 localStorage.setItem("userToken", data.token);
-                localStorage.setItem("userName", fullName); // store full name
-                navigate("/");
-                // redirect to Home
+                localStorage.setItem("userName", fullName);
+
+                // 🔹 Check if email belongs to Admin
+                if (email.endsWith("@animestore.co.za")) {
+                    localStorage.setItem("userRole", "Admin");
+                    navigate("/admin/dashboard");
+                } else {
+                    localStorage.setItem("userRole", "Customer");
+                    navigate("/dashboard");
+                }
             } else {
-                // Show error returned from backend
                 setError(data.message || "Invalid credentials");
             }
         } catch (err) {
@@ -65,10 +83,13 @@ function SignIn() {
                     />
                 </div>
 
-                <button type="submit" className="btn btn-warning w-100">Sign In</button>
+                <button type="submit" className="btn btn-warning w-100">
+                    Sign In
+                </button>
 
                 <p className="text-center mt-3">
-                    Don't have an account? <a href="/signup" className="text-primary">Sign Up</a>
+                    Don't have an account?{" "}
+                    <a href="/signup" className="text-primary">Sign Up</a>
                 </p>
             </form>
         </div>
@@ -76,12 +97,3 @@ function SignIn() {
 }
 
 export default SignIn;
-
-
-
-
-
-
-
-
-
