@@ -91,7 +91,7 @@ function SignUp() {
                     <input type="tel" className="form-control" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
                 </div>
 
-                <button type="submit" className="btn btn-warning w-100 mt-3">Sign Up</button>
+                <button type="submit" className="btn btn-primary w-100 mt-3">Sign Up</button>
 
                 <p className="text-center mt-3">
                     Already have an account? <Link to="/signin" className="text-primary">Sign In</Link>

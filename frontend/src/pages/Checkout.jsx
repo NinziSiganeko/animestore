@@ -107,7 +107,7 @@ function Checkout() {
                 {/* Checkout Form */}
                 <div className="col-lg-6">
                     <div className="card shadow border-0">
-                        <div className="card-header btn-dark fw-bold">Shipping & Payment</div>
+                        <div className="card-header bg-dark text-white fw-bold">Shipping & Payment</div>
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
