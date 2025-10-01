@@ -34,16 +34,14 @@ function SignIn() {
             console.log("Backend response:", data, "status:", response.status);
 
             if (response.ok) {
-                const fullName = data.firstName + " " + data.lastName;
-                localStorage.setItem("userToken", data.token);
-                localStorage.setItem("userName", fullName);
+                localStorage.setItem("userToken", data.token);   // actually userId
+                localStorage.setItem("userId", data.token);      //  store as userId
+                localStorage.setItem("userName", data.name);
+                localStorage.setItem("userRole", data.role);
 
-                // 🔹 Check if email belongs to Admin
-                if (email.endsWith("@animestore.co.za")) {
-                    localStorage.setItem("userRole", "Admin");
+                if (data.role === "Admin") {
                     navigate("/admin/dashboard");
                 } else {
-                    localStorage.setItem("userRole", "Customer");
                     navigate("/dashboard");
                 }
             } else {

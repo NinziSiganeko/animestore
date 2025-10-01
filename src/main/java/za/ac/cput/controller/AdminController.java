@@ -23,9 +23,9 @@ public class AdminController {
         return adminService.create(admin);
     }
 
-    @GetMapping("/read/{adminId}")
-    public Admin read(@PathVariable Long adminId){
-        return adminService.read(adminId);
+    @GetMapping("/read/{userId}")
+    public Admin read(@PathVariable Long userId){
+        return adminService.read(userId);
     }
 
     @PostMapping("/update")
@@ -33,9 +33,9 @@ public class AdminController {
         return adminService.update(admin);
     }
 
-    @DeleteMapping("/delete/{adminId}")
-    public void delete(@PathVariable Long adminId){
-        adminService.delete(adminId);
+    @DeleteMapping("/delete/{userId}")
+    public void delete(@PathVariable Long userId){
+        adminService.delete(userId);
     }
 
     @GetMapping("/getAll")
