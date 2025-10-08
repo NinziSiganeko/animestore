@@ -3,13 +3,14 @@ import { useCart } from "../context/CartContext";
 import { useEffect, useState } from "react";
 
 function ProductDetail() {
-    const { id } = useParams(); // productId from URL
+    const { id } = useParams();
     const { addToCart } = useCart();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // ✅ Fetch from /products/{id}
     useEffect(() => {
-        fetch(`http://localhost:8080/api/products/${id}`)
+        fetch(`http://localhost:8080/products/${id}`)
             .then((res) => {
                 if (!res.ok) throw new Error("Product not found");
                 return res.json();
@@ -27,7 +28,9 @@ function ProductDetail() {
         return (
             <div className="container py-5 text-center">
                 <h2>Product not found</h2>
-                <Link to="/catalog" className="btn btn-primary mt-3">Back to Catalog</Link>
+                <Link to="/catalog" className="btn btn-primary mt-3">
+                    Back to Catalog
+                </Link>
             </div>
         );
     }
@@ -37,7 +40,11 @@ function ProductDetail() {
             <div className="row g-4 align-items-center">
                 <div className="col-md-6 text-center">
                     <img
-                        src={product.img || "/img/placeholder.png"}
+                        src={
+                            product.productImage
+                                ? `data:image/jpeg;base64,${product.productImage}`
+                                : "/img/placeholder.png"
+                        }
                         alt={product.name}
                         className="img-fluid rounded shadow"
                         onError={(e) => (e.target.src = "/img/placeholder.png")}
@@ -46,7 +53,7 @@ function ProductDetail() {
                 <div className="col-md-6">
                     <h2 className="fw-bold">{product.name}</h2>
                     <h4 className="text-muted mb-3">R{product.price.toFixed(2)}</h4>
-                    <p>{product.desc || "No description available."}</p>
+                    <p>{product.desc || "available"}</p>
 
                     <button
                         className="btn btn-dark btn-lg me-3"

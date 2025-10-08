@@ -9,23 +9,23 @@ function MainLayout() {
     const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
     const navigate = useNavigate();
 
-    const [userName, setUserName] = useState(null);
-
-    // Check if user is logged in on mount
-    useEffect(() => {
-        const name = localStorage.getItem("userName");
-        setUserName(name); // this will now show the actual name
-    }, []);
-
+    const [userName, setUserName] = useState(localStorage.getItem("userName"));
+    const [userRole, setUserRole] = useState(localStorage.getItem("userRole"));
 
     const isUser = !!localStorage.getItem("userToken");
 
     const handleLogout = () => {
         localStorage.removeItem("userToken");
         localStorage.removeItem("userName");
+        localStorage.removeItem("userRole");
         setUserName(null);
+        setUserRole(null);
         navigate("/signin");
     };
+
+    // ✅ Decide where to redirect when clicking "Hi, user"
+    const dashboardPath =
+        userRole === "Admin" ? "/admin/dashboard" : "/dashboard";
 
     return (
         <div>
@@ -77,7 +77,9 @@ function MainLayout() {
                                 <NavLink
                                     to="/cart"
                                     className={({ isActive }) =>
-                                        `nav-link position-relative ${isActive ? "text-primary fw-bold" : ""}`
+                                        `nav-link position-relative ${
+                                            isActive ? "text-primary fw-bold" : ""
+                                        }`
                                     }
                                 >
                                     <i className="bi bi-cart me-1"></i> Cart
@@ -96,7 +98,10 @@ function MainLayout() {
                             {!isUser && (
                                 <>
                                     <li className="nav-item mx-2">
-                                        <NavLink to="/signin" className="btn btn-outline-primary btn-sm">
+                                        <NavLink
+                                            to="/signin"
+                                            className="btn btn-outline-primary btn-sm"
+                                        >
                                             <i className="bi bi-box-arrow-in-right me-1"></i> Sign In
                                         </NavLink>
                                     </li>
@@ -113,12 +118,20 @@ function MainLayout() {
                             {isUser && (
                                 <>
                                     <li className="nav-item mx-2">
-                    <span className="nav-link fw-bold text-primary">
-                      <i className="bi bi-person-circle me-1"></i> Hi, {userName}
-                    </span>
+                                        {/* ✅ Make name clickable based on role */}
+                                        <NavLink
+                                            to={dashboardPath}
+                                            className="nav-link fw-bold text-primary"
+                                        >
+                                            <i className="bi bi-person-circle me-1"></i> Hi,{" "}
+                                            {userName}
+                                        </NavLink>
                                     </li>
                                     <li className="nav-item mx-2">
-                                        <button className="btn btn-danger btn-sm" onClick={handleLogout}>
+                                        <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={handleLogout}
+                                        >
                                             <i className="bi bi-box-arrow-right me-1"></i> Logout
                                         </button>
                                     </li>
@@ -136,5 +149,3 @@ function MainLayout() {
 }
 
 export default MainLayout;
-
-
