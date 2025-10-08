@@ -29,9 +29,9 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/read/{customerId}")
-    public Customer read(@PathVariable Long customerId) {
-        return customerService.read(customerId);
+    @GetMapping("/read/{userId}")
+    public Customer read(@PathVariable Long userId) {
+        return customerService.read(userId);
     }
 
     @PostMapping("/update")
@@ -39,9 +39,9 @@ public class CustomerController {
         return customerService.update(customer);
     }
 
-    @DeleteMapping("/delete/{customerId}")
-    public void delete(@PathVariable Long customerId) {
-        customerService.delete(customerId);
+    @DeleteMapping("/delete/{userId}")
+    public void delete(@PathVariable Long userId) {
+        customerService.delete(userId);
     }
 
     @GetMapping("/getAll")
@@ -58,7 +58,7 @@ public class CustomerController {
 
         if (customer != null && customer.getPassword().trim().equals(password)) {
             return Map.of(
-                    "token", String.valueOf(customer.getCustomerId()),
+                    "token", String.valueOf(customer.getUserId()),
                     "firstName", customer.getFirstName(),
                     "lastName", customer.getLastName()
             );

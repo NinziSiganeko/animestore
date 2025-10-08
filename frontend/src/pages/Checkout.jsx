@@ -1,5 +1,5 @@
 import { useCart } from "../context/CartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Checkout() {
@@ -7,13 +7,42 @@ function Checkout() {
     const [loading, setLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("");
     const [paymentDetails, setPaymentDetails] = useState({});
+    const [customer, setCustomer] = useState(null);
     const navigate = useNavigate();
 
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
+    // 🔹 Fetch customer info on mount
+    useEffect(() => {
+        const token = localStorage.getItem("userToken");
+        const userId = localStorage.getItem("userId");
+
+        if (!token || !userId) {
+            navigate("/signin");
+            return;
+        }
+
+        fetch(`http://localhost:8080/customer/read/${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch customer");
+                return res.json();
+            })
+            .then(data => {
+                console.log("Fetched customer:", data);
+                setCustomer(data);
+            })
+            .catch(err => {
+                console.error("Error fetching customer:", err);
+                navigate("/signin");
+            });
+    }, [navigate]);
+
     const handlePaymentChange = (e) => {
         setPaymentMethod(e.target.value);
-        setPaymentDetails({}); // reset when switching method
+        setPaymentDetails({});
     };
 
     const handleDetailChange = (e) => {
@@ -28,6 +57,8 @@ function Checkout() {
         setLoading(true);
 
         try {
+            const userId = localStorage.getItem("userId");
+
             const response = await fetch("http://localhost:8080/payment/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -45,21 +76,22 @@ function Checkout() {
                         paymentDetails.transactionReference ||
                         paymentDetails.cardNumber ||
                         paymentDetails.accountNumber ||
-                        "TEMP_TXN"
+                        paymentDetails.paypalEmail ||
+                        "TEMP_TXN",
+                    userId: userId // 🔹 Link payment to UserId from backend User.java
                 }),
             });
+
             if (response.ok) {
                 const data = await response.json();
-
-
                 navigate("/OrderSuccess", {
                     state: {
                         items: cart,
                         total,
                         payment: data,
+                        customer: customer
                     },
                 });
-
                 clearCart();
             } else {
                 alert("Payment failed ");
@@ -74,7 +106,7 @@ function Checkout() {
 
     return (
         <div className="container py-5">
-            <h2 className="fw-bold mb-4"> Checkout</h2>
+            <h2 className="fw-bold mb-4">Checkout</h2>
 
             <div className="row">
                 {/* Order Summary */}
@@ -107,17 +139,27 @@ function Checkout() {
                 {/* Checkout Form */}
                 <div className="col-lg-6">
                     <div className="card shadow border-0">
-                        <div className="card-header btn-dark fw-bold">Shipping & Payment</div>
+                        <div className="card-header bg-dark text-white fw-bold">Shipping & Payment</div>
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
+                                {/* Autofilled Customer Details */}
                                 <div className="mb-3">
-                                    <label className="form-label">Full Name</label>
-                                    <input type="text" className="form-control" required />
+                                    <label className="form-label fw-bold">Full Name</label>
+                                    <p className="form-control-plaintext">
+                                        {customer ? customer.firstName + " " + customer.lastName : "Loading..."}
+                                    </p>
                                 </div>
 
                                 <div className="mb-3">
-                                    <label className="form-label">Delivery Address</label>
-                                    <textarea className="form-control" rows="3" required></textarea>
+                                    <label className="form-label fw-bold">Delivery Address</label>
+                                    <p className="form-control-plaintext">
+                                        {customer ? customer.address : "Loading..."}
+                                    </p>
+                                </div>
+
+
+                                <div className="mb-3 text-muted">
+                                    <small>If you need to update your info, go to <a href="/dashboard">My Profile</a>.</small>
                                 </div>
 
                                 <div className="mb-3">
@@ -131,6 +173,7 @@ function Checkout() {
                                         <option value="">Select...</option>
                                         <option value="card">Credit / Debit Card</option>
                                         <option value="eft">EFT / Bank Transfer</option>
+                                        <option value="paypal">PayPal</option>
                                     </select>
                                 </div>
 
