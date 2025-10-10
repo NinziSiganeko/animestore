@@ -1,15 +1,9 @@
 package za.ac.cput.domain;
 
-//import org.killbill.billing.payment.api.PaymentMethod;
-
-
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 /*
- *
  * Author S Ninzi(222522569)
- *
  * */
 @Entity
 public class Payment {
@@ -23,18 +17,15 @@ public class Payment {
     private PaymentStatus status;
     private String transactionReference;
 
-
     @OneToOne
     @JoinColumn(name = "order_id")
     private CustomerOrder customerOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "user_id")
     private Customer customer;
 
-
     protected Payment() {
-
     }
 
     public Payment(Builder builder){
@@ -46,48 +37,33 @@ public class Payment {
         this.transactionReference = builder.transactionReference;
         this.customer = builder.customer;
         this.customerOrder = builder.customerOrder;
-
-
-
-
     }
 
     public Long getPaymentId() {
-
         return paymentId;
     }
-
     public double getAmount() {
-
         return amount;
     }
-
     public PaymentMethod getMethod() {
-
         return method;
     }
 
     public LocalDateTime getPaymentDate() {
-
         return paymentDate;
     }
-
     public PaymentStatus getStatus() {
         return status;
     }
-
     public CustomerOrder getCustomerOrder() {
         return customerOrder;
     }
-
     public Customer getCustomer() {
         return customer;
     }
-
     public String getTransactionReference() {
         return transactionReference;
     }
-
     @Override
     public String toString() {
         return "Payment{" +
@@ -101,7 +77,6 @@ public class Payment {
                 ", customer=" + customer +
                 '}';
     }
-
     public static class Builder {
         private Long paymentId;
         private double amount;
@@ -112,33 +87,26 @@ public class Payment {
         private Customer customer;
         private CustomerOrder customerOrder;
 
-
-
         public Builder setPaymentId(Long paymentId) {
             this.paymentId = paymentId;
             return this;
         }
-
         public Builder setAmount(double amount) {
             this.amount = amount;
             return this;
         }
-
         public Builder setMethod(PaymentMethod method) {
             this.method = method;
             return this;
         }
-
         public Builder setPaymentDate(LocalDateTime paymentDate) {
             this.paymentDate = paymentDate;
             return this;
         }
-
         public Builder setStatus(PaymentStatus status) {
             this.status = status;
             return this;
         }
-
         public Builder setTransactionReference(String transactionReference) {
             this.transactionReference = transactionReference;
             return this;
@@ -147,12 +115,10 @@ public class Payment {
             this.customerOrder = customerOrder;
             return this;
         }
-
         public Builder setCustomer(Customer customer) {
             this.customer = customer;
             return this;
         }
-
         public Builder copy(Payment payment) {
             this.paymentId = payment.paymentId;
             this.amount = payment.amount;
@@ -164,10 +130,8 @@ public class Payment {
             this.customerOrder = payment.customerOrder;
             return this;
         }
-
         public Payment build() {
             return new Payment(this);
-
         }
     }
 }

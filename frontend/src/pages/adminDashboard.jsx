@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Row, Col, Card } from "react-bootstrap";
-import axios from "axios";
+import api from "../utils/api";
 import ProductsPage from "./ProductsPage";
 import CustomersPage from "./CustomersPage";
-import InventoryPage from "./InventoryPage"; // 👈 import inventory page
+import InventoryPage from "./InventoryPage";
 
 function AdminDashboard() {
   const [activePage, setActivePage] = useState("dashboard");
@@ -23,7 +23,7 @@ function AdminDashboard() {
   // Fetch categories
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/categories");
+      const response = await api.get("/categories");
       setCategories(response.data);
     } catch (err) {
       console.error(err);
@@ -65,7 +65,7 @@ function AdminDashboard() {
       if (existingCategory) {
         categoryId = existingCategory.categoryId;
       } else {
-        const categoryResponse = await axios.post("http://localhost:8080/categories", {
+        const categoryResponse = await api.post("/categories", {
           categoryName: formData.categoryName,
         });
         categoryId = categoryResponse.data.categoryId;
@@ -83,7 +83,7 @@ function AdminDashboard() {
         productFormData.append("productImage", formData.productImage);
       }
 
-      await axios.post("http://localhost:8080/products", productFormData, {
+      await api.post("/products", productFormData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

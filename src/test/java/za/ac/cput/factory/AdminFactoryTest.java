@@ -9,17 +9,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AdminFactoryTest {
 
-    private Admin admin;
+    private Admin admin,admin2;
     @BeforeEach
     void setUp() {
         admin = AdminFactory.createAdmin(
-                "John_Doe", "John", "Doe", "veronicapuleng91@gmail.com", "123 Main St", "0672345678");
+                "John_Doe", "naidoo_1@dev", "veronicapuleng91@gmail.com");
+        admin2 = AdminFactory.createAdmin("nosi1","naidoo_1@dev","nosi@animestore.co.za");
+
 
     }
 
     @Test
     void createAdmin() {
-        assertNotNull(admin);
-        System.out.println(admin);
+        assertNotNull(admin2);
+        System.out.println(admin2);
     }
 }

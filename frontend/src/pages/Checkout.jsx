@@ -1,6 +1,7 @@
 import { useCart } from "../context/CartContext";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
 function Checkout() {
     const { cart, clearCart } = useCart();
@@ -9,96 +10,111 @@ function Checkout() {
     const [paymentDetails, setPaymentDetails] = useState({});
     const [customer, setCustomer] = useState(null);
     const navigate = useNavigate();
-
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-    // 🔹 Fetch customer info on mount
     useEffect(() => {
         const token = localStorage.getItem("userToken");
+        const userEmail = localStorage.getItem("userEmail"); // Store email during signin
         const userId = localStorage.getItem("userId");
 
-        if (!token || !userId) {
-            navigate("/signin");
+        if (!token) return;
+        // Try to fetch by userId first, then by email
+        const fetchCustomer = async () => {
+            try {
+                let response;
+                if (userId) {
+                    response = await api.get(`/customer/read/${userId}`);
+                } else if (userEmail) {
+                    response = await api.get(`/customer/read/email/${userEmail}`);
+                } else {
+                    throw new Error("No user identifier found");
+                }
+
+                console.log("Fetched customer:", response.data);
+                setCustomer(response.data);
+            } catch (err) {
+                console.error("Error fetching customer:", err);
+                if (err.response?.status === 403 || err.response?.status === 401) {
+                    localStorage.clear();
+                    navigate("/signin");
+                }
+            }
+        };
+        fetchCustomer();
+    }, [navigate]);
+    // Handle payment method selection (dropdown)
+    const handlePaymentChange = (e) => {
+        setPaymentMethod(e.target.value);
+        setPaymentDetails({}); // reset previous payment fields
+    };
+// Handle dynamic input fields
+    const handleDetailChange = (e) => {
+        const { name, value } = e.target;
+        setPaymentDetails((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+// Handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!customer) {
+            alert("Customer details not loaded yet. Please wait a moment.");
             return;
         }
 
-        fetch(`http://localhost:8080/customer/read/${userId}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("Failed to fetch customer");
-                return res.json();
-            })
-            .then(data => {
-                console.log("Fetched customer:", data);
-                setCustomer(data);
-            })
-            .catch(err => {
-                console.error("Error fetching customer:", err);
-                navigate("/signin");
-            });
-    }, [navigate]);
-
-    const handlePaymentChange = (e) => {
-        setPaymentMethod(e.target.value);
-        setPaymentDetails({});
-    };
-
-    const handleDetailChange = (e) => {
-        setPaymentDetails({
-            ...paymentDetails,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
         setLoading(true);
-
         try {
-            const userId = localStorage.getItem("userId");
+            // Map the frontend method to backend enum
+            const methodMap = {
+                card: "CREDIT_CARD",
+                eft: "EFT",
+                paypal: "PAYPAL",
+            };
 
-            const response = await fetch("http://localhost:8080/payment/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    amount: total,
-                    method:
-                        paymentMethod === "card"
-                            ? "CREDIT_CARD"
-                            : paymentMethod === "eft"
-                                ? "EFT"
-                                : "PAYPAL",
-                    paymentDate: new Date().toISOString(),
-                    status: "PENDING",
-                    transactionReference:
-                        paymentDetails.transactionReference ||
-                        paymentDetails.cardNumber ||
-                        paymentDetails.accountNumber ||
-                        paymentDetails.paypalEmail ||
-                        "TEMP_TXN",
-                    userId: userId // 🔹 Link payment to UserId from backend User.java
-                }),
+            // Create a mock transaction reference
+            const transactionReference = `TXN-${Date.now()}`;
+
+            // Build payment request
+            const paymentRequest = {
+                amount: total,
+                method: methodMap[paymentMethod],
+                status: "PENDING",
+                transactionReference,
+                customer: {
+                    userId: customer.userId,
+                    email: customer.email,
+                },
+            };
+
+            console.log("Submitting payment:", paymentRequest);
+
+            // Send to backend
+            const response = await api.post("/payment/create", paymentRequest);
+            console.log("Payment success:", response.data);
+
+            const paymentData = response.data; // save for clarity
+
+            clearCart();
+
+
+            navigate("/success", {
+                state: {
+                    orderId: paymentData.orderId,
+                    paymentId: paymentData.paymentId,
+                    amount: paymentData.amount,
+                    status: paymentData.status,
+                    transactionReference: paymentData.transactionReference,
+                    customerEmail: paymentData.customerEmail,
+                    customerName: paymentData.customerName,
+                    orderDate: paymentData.orderDate,
+                    cartItems: cart,
+                },
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                navigate("/OrderSuccess", {
-                    state: {
-                        items: cart,
-                        total,
-                        payment: data,
-                        customer: customer
-                    },
-                });
-                clearCart();
-            } else {
-                alert("Payment failed ");
-            }
-        } catch (err) {
-            console.error("Error creating payment:", err);
-            alert("Error processing payment");
+        } catch (error) {
+            console.error("Payment failed:", error);
+            alert("Payment could not be processed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -107,7 +123,6 @@ function Checkout() {
     return (
         <div className="container py-5">
             <h2 className="fw-bold mb-4">Checkout</h2>
-
             <div className="row">
                 {/* Order Summary */}
                 <div className="col-lg-6 mb-4">
@@ -120,8 +135,13 @@ function Checkout() {
                                 <li className="list-group-item text-muted">Your cart is empty.</li>
                             ) : (
                                 cart.map((item) => (
-                                    <li key={item.id} className="list-group-item d-flex justify-content-between">
-                                        <span>{item.name} (x{item.qty})</span>
+                                    <li
+                                        key={item.id}
+                                        className="list-group-item d-flex justify-content-between"
+                                    >
+                    <span>
+                      {item.name} (x{item.qty})
+                    </span>
                                         <span>R {(item.price * item.qty).toFixed(2)}</span>
                                     </li>
                                 ))
@@ -135,33 +155,36 @@ function Checkout() {
                         </ul>
                     </div>
                 </div>
-
                 {/* Checkout Form */}
                 <div className="col-lg-6">
                     <div className="card shadow border-0">
-                        <div className="card-header bg-dark text-white fw-bold">Shipping & Payment</div>
+                        <div className="card-header bg-dark text-white fw-bold">
+                            Shipping & Payment
+                        </div>
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
-                                {/* Autofilled Customer Details */}
+                                {/* Customer Info */}
                                 <div className="mb-3">
                                     <label className="form-label fw-bold">Full Name</label>
                                     <p className="form-control-plaintext">
-                                        {customer ? customer.firstName + " " + customer.lastName : "Loading..."}
+                                        {customer
+                                            ? `${customer.firstName} ${customer.lastName}`
+                                            : "Loading..."}
                                     </p>
                                 </div>
-
                                 <div className="mb-3">
                                     <label className="form-label fw-bold">Delivery Address</label>
                                     <p className="form-control-plaintext">
                                         {customer ? customer.address : "Loading..."}
                                     </p>
                                 </div>
-
-
                                 <div className="mb-3 text-muted">
-                                    <small>If you need to update your info, go to <a href="/dashboard">My Profile</a>.</small>
+                                    <small>
+                                        If you need to update your info, go to{" "}
+                                        <a href="/dashboard">My Profile</a>.
+                                    </small>
                                 </div>
-
+                                {/* Payment Method */}
                                 <div className="mb-3">
                                     <label className="form-label">Payment Method</label>
                                     <select
@@ -176,36 +199,73 @@ function Checkout() {
                                         <option value="paypal">PayPal</option>
                                     </select>
                                 </div>
-
-                                {/* Dynamic Payment Fields */}
+                                {/* Dynamic Fields */}
                                 {paymentMethod === "card" && (
                                     <div className="mb-3">
                                         <label className="form-label">Card Number</label>
-                                        <input type="text" name="cardNumber" className="form-control" onChange={handleDetailChange} required />
+                                        <input
+                                            type="text"
+                                            name="cardNumber"
+                                            className="form-control"
+                                            onChange={handleDetailChange}
+                                            required
+                                        />
                                         <label className="form-label mt-2">Expiry Date</label>
-                                        <input type="text" name="expiryDate" className="form-control" placeholder="MM/YY" onChange={handleDetailChange} required />
+                                        <input
+                                            type="text"
+                                            name="expiryDate"
+                                            className="form-control"
+                                            placeholder="MM/YY"
+                                            onChange={handleDetailChange}
+                                            required
+                                        />
                                         <label className="form-label mt-2">CVV</label>
-                                        <input type="text" name="cvv" className="form-control" onChange={handleDetailChange} required />
+                                        <input
+                                            type="text"
+                                            name="cvv"
+                                            className="form-control"
+                                            onChange={handleDetailChange}
+                                            required
+                                        />
                                     </div>
                                 )}
-
                                 {paymentMethod === "eft" && (
                                     <div className="mb-3">
                                         <label className="form-label">Bank Name</label>
-                                        <input type="text" name="bankName" className="form-control" onChange={handleDetailChange} required />
+                                        <input
+                                            type="text"
+                                            name="bankName"
+                                            className="form-control"
+                                            onChange={handleDetailChange}
+                                            required
+                                        />
                                         <label className="form-label mt-2">Account Number</label>
-                                        <input type="text" name="accountNumber" className="form-control" onChange={handleDetailChange} required />
+                                        <input
+                                            type="text"
+                                            name="accountNumber"
+                                            className="form-control"
+                                            onChange={handleDetailChange}
+                                            required
+                                        />
                                     </div>
                                 )}
-
                                 {paymentMethod === "paypal" && (
                                     <div className="mb-3">
                                         <label className="form-label">PayPal Email</label>
-                                        <input type="email" name="paypalEmail" className="form-control" onChange={handleDetailChange} required />
+                                        <input
+                                            type="email"
+                                            name="paypalEmail"
+                                            className="form-control"
+                                            onChange={handleDetailChange}
+                                            required
+                                        />
                                     </div>
                                 )}
-
-                                <button type="submit" className="btn btn-dark w-100" disabled={loading}>
+                                <button
+                                    type="submit"
+                                    className="btn btn-dark w-100"
+                                    disabled={loading}
+                                >
                                     {loading ? "Processing..." : "Place Order"}
                                 </button>
                             </form>
@@ -216,5 +276,4 @@ function Checkout() {
         </div>
     );
 }
-
 export default Checkout;

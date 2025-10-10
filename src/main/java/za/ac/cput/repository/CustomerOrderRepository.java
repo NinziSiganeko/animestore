@@ -6,7 +6,7 @@ import za.ac.cput.domain.CustomerOrder;
 import java.util.List;
 
 @Repository
-public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Integer> {
+public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Long> {
 
-    List<CustomerOrder> findByStatus(String status);
+//    List<CustomerOrder> findByCustomerOrderId(Long Id);
 }

@@ -21,7 +21,7 @@ public class CustomerOrderController {
     }
 
     @GetMapping("/read/{customerOrderId}")
-    public CustomerOrder read(@PathVariable int customerOrderId){
+    public CustomerOrder read(@PathVariable Long customerOrderId){
         return service.read(customerOrderId);
     }
 
@@ -31,7 +31,7 @@ public class CustomerOrderController {
     }
 
     @DeleteMapping("/delete/{customerOrderId}")
-    public void delete(@PathVariable int customerOrderId){
+    public void delete(@PathVariable Long customerOrderId){
         service.delete(customerOrderId);
     }
 

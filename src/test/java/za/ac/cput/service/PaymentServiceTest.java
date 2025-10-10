@@ -68,7 +68,7 @@ class PaymentServiceTest {
         Payment updated = service.update(updatedPayment);
         assertNotNull(updated);
         assertEquals(1399.99, updated.getAmount());
-        payment = updated; // keep reference with updated object
+        payment = updated;
         System.out.println("Updated: " + updated);
     }
 

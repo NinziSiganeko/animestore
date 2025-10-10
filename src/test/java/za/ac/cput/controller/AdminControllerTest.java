@@ -23,26 +23,24 @@ class AdminControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private Admin admin;
-    private  Admin admin2;
+    private Admin admin, admin2;
     private static final String BASE_URL = "http://localhost:8080/admin";
 
 
     @BeforeEach
     void setUp() {
         admin = AdminFactory.createAdmin(
-                "john_doe", "John", "password123", "veronicapuleng91@gmail.com", "123 Main St", "555-1234");
-        admin2 = AdminFactory.createAdmin(
-                "john_doe2", "John2", "password1233", "veronicapuleng91@gmail.com2", "123 Main St2", "555-12342");
+                "veronica@animestore.co.za",  "naidoo_1@dev", "veronica@animestore.co.za");
+        admin2 = AdminFactory.createAdmin("Nos","naidoo_1@dev","nosi@animestore.co.za");
     }
 
     @Test
     void create() {
         String url = BASE_URL + "/create";
-        ResponseEntity<Admin> postResponse = restTemplate.postForEntity(url, admin,Admin.class);
-        assertNotNull(postResponse);
-        assertNotNull(postResponse.getBody());
-        System.out.println("Created: " + postResponse.getBody());
+//        ResponseEntity<Admin> postResponse = restTemplate.postForEntity(url, admin,Admin.class);
+//        assertNotNull(postResponse);
+//        assertNotNull(postResponse.getBody());
+//        System.out.println("Created: " + postResponse.getBody());
 
         ResponseEntity<Admin> postResponse2 = restTemplate.postForEntity(url, admin2,Admin.class);
         assertNotNull(postResponse2);

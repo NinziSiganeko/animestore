@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Catalog from "./pages/Catalog";
@@ -6,23 +7,102 @@ import Cart from "./pages/Cart";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Checkout from "./pages/Checkout";
-import Success from "./pages/Success";
 import Designs from "./pages/Designs";
 import ProductDetail from "./pages/ProductDetail";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/adminDashboard";
+import OrderSuccess from "./pages/OrderSuccess.jsx";
 
-// PrivateRoute for logged-in customers
 function PrivateRoute({ children }) {
-    const token = localStorage.getItem("userToken");
-    return token ? children : <Navigate to="/signin" />;
+    const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const checkAuth = () => {
+            const token = localStorage.getItem("userToken");
+            const role = localStorage.getItem("userRole");
+            if (token && (role === "CUSTOMER" || role === "ADMIN")) {
+                setIsAuthenticated(true);
+            }
+            setIsLoading(false);
+        };
+
+        checkAuth();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
+    return isAuthenticated ? children : <Navigate to="/signin" replace />;
 }
+
 
 // Admin-only route
 function AdminRoute({ children }) {
-    const token = localStorage.getItem("userToken");
-    const role = localStorage.getItem("userRole");
-    return token && role === "Admin" ? children : <Navigate to="/signin" />;
+    const [isLoading, setIsLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("userToken");
+        const role = localStorage.getItem("userRole");
+
+        console.log("AdminRoute check - Token:", !!token, "Role:", role); // Debug log
+
+        // Check for ADMIN role (uppercase - matching backend response)
+        if (token && role === "ADMIN") {
+            setIsAdmin(true);
+        }
+        setIsLoading(false);
+    }, []);
+
+    if (isLoading) {
+        return <div className="d-flex justify-content-center align-items-center" style={{height: '100vh'}}>
+            <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        </div>;
+    }
+
+    return isAdmin ? children : <Navigate to="/signin" replace />;
+}
+
+// Redirect signed-in users away from sign-in/sign-up pages
+function AuthRoute({ children }) {
+    const [isLoading, setIsLoading] = useState(true);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
+    const [redirectPath, setRedirectPath] = useState("/");
+
+    useEffect(() => {
+        const token = localStorage.getItem("userToken");
+        const role = localStorage.getItem("userRole");
+
+        if (token) {
+            setShouldRedirect(true);
+            if (role === "ADMIN") {
+                setRedirectPath("/admin/dashboard");
+            } else if (role === "CUSTOMER") {
+                setRedirectPath("/dashboard");
+            }
+        }
+        setIsLoading(false);
+    }, []);
+
+    if (isLoading) {
+        return <div className="d-flex justify-content-center align-items-center" style={{height: '100vh'}}>
+            <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        </div>;
+    }
+
+    return shouldRedirect ? <Navigate to={redirectPath} replace /> : children;
 }
 
 function App() {
@@ -32,10 +112,31 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="catalog" element={<Catalog />} />
                 <Route path="cart" element={<Cart />} />
-                <Route path="signin" element={<SignIn />} />
-                <Route path="signup" element={<SignUp />} />
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="success" element={<Success />} />
+
+                {/* Auth routes - redirect if already signed in */}
+                <Route path="signin" element={
+                    <AuthRoute>
+                        <SignIn />
+                    </AuthRoute>
+                } />
+                <Route path="signup" element={
+                    <AuthRoute>
+                        <SignUp />
+                    </AuthRoute>
+                } />
+
+                {/* Protected routes */}
+                <Route path="checkout" element={
+                    <PrivateRoute>
+                        <Checkout />
+                    </PrivateRoute>
+                } />
+                <Route path="success" element={
+                    <PrivateRoute>
+                        <OrderSuccess />
+                    </PrivateRoute>
+                } />
+
                 <Route path="designs" element={<Designs />} />
                 <Route path="product/:id" element={<ProductDetail />} />
 
@@ -61,7 +162,7 @@ function App() {
             </Route>
 
             {/* Redirect unknown routes to Home */}
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }

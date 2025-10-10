@@ -4,7 +4,6 @@ import za.ac.cput.domain.Payment;
 import za.ac.cput.domain.PaymentMethod;
 import za.ac.cput.domain.PaymentStatus;
 import za.ac.cput.util.Helper;
-
 import java.time.LocalDateTime;
 
 public class PaymentFactory {
@@ -17,8 +16,6 @@ public class PaymentFactory {
             System.out.println("Invalid amount: " + amount);
             return null;
         }
-
-
         if (method == PaymentMethod.CREDIT_CARD || method == PaymentMethod.DEBIT_CARD) {
             if (!Helper.isValidCard(cardNumber)) {
                 System.out.println("Invalid card number: " + cardNumber);
@@ -31,8 +28,7 @@ public class PaymentFactory {
                 return null;
             }
         }
-
-        LocalDateTime date = Helper.getPaymentDate(paymentDate);
+        LocalDateTime date = Helper.getDate(paymentDate);
 
         return new Payment.Builder()
                 .setAmount(amount)

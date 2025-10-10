@@ -13,8 +13,7 @@ import za.ac.cput.domain.Admin;
 import za.ac.cput.domain.CustomerOrder;
 import za.ac.cput.factory.AdminFactory;
 import za.ac.cput.factory.CustomerOrderFactory;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,8 +30,8 @@ class CustomerOrderControllerTest {
 
     @BeforeEach
     void setUp() {
-        customerOrder = CustomerOrderFactory.createOrder(1, LocalDate.now(), "pending");
-        customerOrder2  = CustomerOrderFactory.createOrder(2, LocalDate.now(), "received");
+        customerOrder = CustomerOrderFactory.createOrder( LocalDateTime.now(), "pending");
+        customerOrder2  = CustomerOrderFactory.createOrder( LocalDateTime.now(), "received");
 
     }
 

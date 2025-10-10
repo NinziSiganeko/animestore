@@ -9,7 +9,7 @@ public class CustomerFactory {
         if (Helper.isNullOrEmpty(username) ||
                 Helper.isNullOrEmpty(password) ||
                 Helper.isNullOrEmpty(name) ||
-                Helper.isNullOrEmpty(email) ||
+                Helper.isValidEmail(email) ||
                 Helper.isNullOrEmpty(address) ||
                 Helper.isNullOrEmpty(phoneNumber)) {
             return null;

@@ -21,8 +21,8 @@ public class CustomerOrderService implements ICustomerOrderService{
     }
 
     @Override
-    public CustomerOrder read(Integer integer) {
-        return repository.findById(integer).orElse(null);
+    public CustomerOrder read(Long customerOrderId) {
+        return repository.findById(customerOrderId).orElse(null);
     }
 
     @Override
@@ -31,13 +31,17 @@ public class CustomerOrderService implements ICustomerOrderService{
     }
 
     @Override
-    public boolean delete(Integer integer) {
-        repository.deleteById(integer);
-        return !repository.existsById(integer);
+    public boolean delete(Long customerOrderId) {
+        repository.deleteById(customerOrderId);
+        return true;
     }
 
     @Override
     public List<CustomerOrder> getAll() {
         return repository.findAll();
     }
+    public CustomerOrder findByCustomerOrderId(Long customerOrderId) {
+        return repository.findById(customerOrderId).orElse(null);
+    }
+
 }

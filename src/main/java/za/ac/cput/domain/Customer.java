@@ -15,7 +15,9 @@ public class Customer extends User {
     private String phoneNumber;
     private String firstName;
     private String lastName;
-//    private Long customerId; // Fixed field
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomerOrder> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
@@ -32,14 +34,13 @@ public class Customer extends User {
         this.phoneNumber = builder.phoneNumber;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
-//        this.customerId = builder.customerId; // Set properly
-    }
 
+    }
     public String getAddress() { return address; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
     public String getPhoneNumber() { return phoneNumber; }
-//    public Long getCustomerId() { return customerId; } // Fixed getter
+
 
     @Override
     public String toString() {
@@ -55,7 +56,6 @@ public class Customer extends User {
 
     public static class Builder {
         private Long userId;
-       // private Long customerId; // Added for builder
         private String username;
         private String password;
         private String email;
@@ -65,7 +65,6 @@ public class Customer extends User {
         private String lastName;
 
         public Builder setUserId(Long userId) { this.userId = userId; return this; }
-       // public Builder setCustomerId(Long customerId) { this.customerId = customerId; return this; }
         public Builder setUsername(String username) { this.username = username; return this; }
         public Builder setPassword(String password) { this.password = password; return this; }
         public Builder setEmail(String email) { this.email = email; return this; }
@@ -76,7 +75,6 @@ public class Customer extends User {
 
         public Builder copy(Customer customer) {
             this.userId = customer.userId;
-         //   this.customerId = customer.customerId; // Copy field
             this.username = customer.username;
             this.password = customer.password;
             this.email = customer.email;

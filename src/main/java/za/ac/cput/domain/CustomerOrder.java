@@ -1,7 +1,7 @@
 package za.ac.cput.domain;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +10,13 @@ public class CustomerOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int orderId;
-
-    private LocalDate orderDate;
+    private Long customerOrderId;
+    private LocalDateTime orderDate;
     private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Customer customer;
 
     @OneToOne(mappedBy = "customerOrder", cascade = CascadeType.ALL)
     private Payment payment;
@@ -25,15 +28,15 @@ public class CustomerOrder {
     protected CustomerOrder() {}
 
     public CustomerOrder(Builder builder) {
-        this.orderId = builder.orderId;
+        this.customerOrderId = builder.customerOrderId;
         this.orderDate = builder.orderDate;
         this.status = builder.status;
         this.items = builder.items != null ? builder.items : new ArrayList<>();
         this.items.forEach(item -> item.setCustomerOrder(this));
     }
 
-    public int getOrderId() { return orderId; }
-    public LocalDate getOrderDate() { return orderDate; }
+    public Long getCustomerOrderId() { return customerOrderId; }
+    public LocalDateTime getOrderDate() { return orderDate; }
     public String getStatus() { return status; }
     public List<OrderItem> getItems() { return items; }
 
@@ -45,7 +48,7 @@ public class CustomerOrder {
     @Override
     public String toString() {
         return "CustomerOrder{" +
-                "orderId=" + orderId +
+                "customerOrderId=" + customerOrderId +
                 ", orderDate=" + orderDate +
                 ", status='" + status + '\'' +
                 ", items=" + items +
@@ -53,18 +56,18 @@ public class CustomerOrder {
     }
 
     public static class Builder {
-        private int orderId;
-        private LocalDate orderDate;
+        private Long customerOrderId;
+        private LocalDateTime orderDate;
         private String status;
         private List<OrderItem> items;
 
-        public Builder setOrderId(int orderId) { this.orderId = orderId; return this; }
-        public Builder setOrderDate(LocalDate orderDate) { this.orderDate = orderDate; return this; }
+        public Builder setCustomerOrderId(Long customerOrderId) { this.customerOrderId = customerOrderId; return this; }
+        public Builder setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; return this; }
         public Builder setStatus(String status) { this.status = status; return this; }
         public Builder setItems(List<OrderItem> items) { this.items = items; return this; }
 
         public Builder copy(CustomerOrder customerOrder) {
-            this.orderId = customerOrder.getOrderId();
+            this.customerOrderId = customerOrder.getCustomerOrderId();
             this.orderDate = customerOrder.getOrderDate();
             this.status = customerOrder.getStatus();
             this.items = customerOrder.getItems();

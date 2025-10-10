@@ -2,22 +2,29 @@ package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import za.ac.cput.service.CustomerService;
 import za.ac.cput.domain.Customer;
-
+import za.ac.cput.security.JwtUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/customer")
-@CrossOrigin(origins = "http://localhost:5173") // React app URL
+@CrossOrigin(origins = "http://localhost:5173")
 public class CustomerController {
 
     @Autowired
-    CustomerService customerService;
+    private CustomerService customerService;
+
+    @Autowired
+    private JwtUtils jwtTokenUtils;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/create")
     public Customer create(@RequestBody Customer customer) {
@@ -50,27 +57,27 @@ public class CustomerController {
     }
 
     @PostMapping("/signin")
-    public Map<String, String> signIn(@RequestBody Map<String, String> credentials) {
+    public Map<String, Object> signIn(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email").trim();
         String password = credentials.get("password").trim();
 
         Customer customer = customerService.findByEmail(email);
 
-        if (customer != null && customer.getPassword().trim().equals(password)) {
-            return Map.of(
-                    "token", String.valueOf(customer.getUserId()),
-                    "firstName", customer.getFirstName(),
-                    "lastName", customer.getLastName()
-            );
-        }
+        // Use the password encoder to securely compare the plain-text password
+        // with the hashed password from the database.
+        if (customer != null && passwordEncoder.matches(password, customer.getPassword())) {
+            String token = jwtTokenUtils.generateToken(customer.getEmail(),"CUSTOMER");
 
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("userId", customer.getUserId());
+            response.put("email", customer.getEmail());
+            response.put("firstName", customer.getFirstName());
+            response.put("lastName", customer.getLastName());
+            response.put("role", "CUSTOMER");
+
+            return response;
+        }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
     }
-
 }
-
-
-
-
-
-

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 
 function Cart() {
     const { cart, removeFromCart, clearCart } = useCart();
-
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
     return (
@@ -34,19 +33,19 @@ function Cart() {
                             </li>
                         ))}
                     </ul>
-
                     <h4>
                         Total:{" "}
                         <span className="text-success">R {total.toFixed(2)}</span>
                     </h4>
-
                     <div className="mt-3">
                         <button className="btn btn-outline-danger me-2" onClick={clearCart}>
                             Clear Cart
                         </button>
-
-
-                        <Link to="/checkout" className="btn btn-success">
+                        <Link
+                            to="/checkout"
+                            className="btn btn-success"
+                            onClick={() => console.log("Navigating to checkout...")}
+                        >
                             Checkout
                         </Link>
                     </div>
