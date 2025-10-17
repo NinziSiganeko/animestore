@@ -186,35 +186,68 @@ function Home() {
                         padding: "40px",
                     }}
                 >
-                    <h2 className="display-5 fw-bold mb-4 text-primary">Why Choose AnimeWear?</h2>
+                    <h2 className="display-5 fw-bold mb-4 text-primary">Why Choose AnimeStore?</h2>
                     <p className="lead mb-5">
-                        AnimeWear isn’t just clothing — it’s a lifestyle. We combine premium fabrics with legendary anime designs so you can rep your fandom in style.
+                        AnimeStore isn’t just about fashion it’s about passion. We blend premium fabrics with
+                        authentic anime-inspired designs, crafted locally for fans who live and breathe anime culture.
                     </p>
-                    <div className="row g-4">
+
+                    {/* Features */}
+                    <div className="row g-4 mb-5">
                         <div className="col-md-4">
                             <div className="p-4 bg-secondary rounded h-100 shadow">
-                                <i className="bi bi-star-fill text-primary display-6 mb-3"></i>
+                                <i className="bi  text-primary display-6 mb-3"></i>
                                 <h5 className="fw-bold">Premium Quality</h5>
-                                <p>Soft, durable fabrics designed for all-day comfort — hoodies, tees & more.</p>
+                                <p>Soft, durable fabrics designed for comfort hoodies, tees, and more.</p>
                             </div>
                         </div>
                         <div className="col-md-4">
                             <div className="p-4 bg-secondary rounded h-100 shadow">
-                                <i className="bi bi-globe2 text-primary display-6 mb-3"></i>
-                                <h5 className="fw-bold">Worldwide Shipping</h5>
-                                <p>No matter where you live, AnimeWear delivers straight to your door.</p>
+                                <i className="bi  text-primary display-6 mb-3"></i>
+                                <h5 className="fw-bold">Nationwide Delivery</h5>
+                                <p>We proudly deliver across South Africa from Cape Town to Johannesburg and beyond.</p>
                             </div>
                         </div>
                         <div className="col-md-4">
                             <div className="p-4 bg-secondary rounded h-100 shadow">
-                                <i className="bi bi-heart-fill text-primary display-6 mb-3"></i>
+                                <i className="bi  text-primary display-6 mb-3"></i>
                                 <h5 className="fw-bold">For True Fans</h5>
-                                <p>Every design is inspired by legendary anime — made by fans, for fans</p>
+                                <p>Every design is inspired by legendary anime made by fans, for fans.</p>
                             </div>
                         </div>
                     </div>
+
+                    {/* Social Media Links */}
+                    <div className="d-flex justify-content-center gap-4">
+                        <a
+                            href="https://www.facebook.com/AnimeStoreSA"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white fs-3"
+                        >
+                            <i className="bi bi-facebook"></i>
+                        </a>
+                        <a
+                            href="https://www.instagram.com/AnimeStoreSA"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white fs-3"
+                        >
+                            <i className="bi bi-instagram"></i>
+                        </a>
+                        <a
+                            href="https://www.tiktok.com/@AnimeStoreSA"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white fs-3"
+                        >
+                            <i className="bi bi-tiktok"></i>
+                        </a>
+                    </div>
+                    <p className="mt-3 text-white-50">Follow us for new drops and exclusive deals</p>
                 </div>
             </section>
+
         </div>
     );
 }
