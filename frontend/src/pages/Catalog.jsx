@@ -9,7 +9,7 @@ function Catalog() {
     const [category, setCategory] = useState("all");
     const [search, setSearch] = useState("");
 
-    // ✅ Fetch from /products
+    //Fetch from /products
     useEffect(() => {
         fetch("http://localhost:8080/products")
             .then((res) => {
@@ -20,7 +20,7 @@ function Catalog() {
             .catch((err) => console.error("Error fetching products:", err));
     }, []);
 
-    // ✅ Filter products
+    // Filter products
     const filteredProducts = products.filter((p) => {
         const matchesCategory =
             category === "all" ||
@@ -68,7 +68,7 @@ function Catalog() {
                             <div className="card shadow-lg border-0 h-100 hover-shadow">
                                 <Link to={`/product/${p.productId}`}>
                                     {p.productImage ? (
-                                        // ✅ Show base64 image
+                                        //Show base64 image
                                         <img
                                             src={`data:image/jpeg;base64,${p.productImage}`}
                                             className="card-img-top"
@@ -117,5 +117,4 @@ function Catalog() {
         </div>
     );
 }
-
 export default Catalog;

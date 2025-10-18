@@ -9,16 +9,20 @@ export function CartProvider({ children }) {
     // Add product to cart
     const addToCart = (product) => {
         setCart((prev) => {
-            const exists = prev.find((item) => item.id === product.id);
+            // Normalize product ID (handle both productId and id)
+            const productId = product.productId || product.id;
+
+            const exists = prev.find((item) => item.id === productId);
             if (exists) {
                 return prev.map((item) =>
-                    item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+                    item.id === productId ? { ...item, qty: item.qty + 1 } : item
                 );
             }
-            return [...prev, { ...product, qty: 1 }];
+
+            // Add new product with a normalized id field
+            return [...prev, { ...product, id: productId, qty: 1 }];
         });
     };
-
     // Remove product from cart
     const removeFromCart = (id) => {
         setCart((prev) => prev.filter((item) => item.id !== id));

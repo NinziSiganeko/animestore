@@ -143,8 +143,8 @@ function Home() {
                                             alt={p.name}
                                             className="card-img-top"
                                             style={{
-                                                height: "250px",   // ✅ uniform image height
-                                                objectFit: "cover", // ✅ keeps images same size
+                                                height: "250px",   //  uniform image height
+                                                objectFit: "cover", //  keeps images same size
                                             }}
                                             onError={(e) => (e.target.src = "/img/placeholder.png")}
                                         />
