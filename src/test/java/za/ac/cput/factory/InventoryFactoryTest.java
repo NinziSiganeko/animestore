@@ -22,9 +22,9 @@ class InventoryFactoryTest {
             sampleImage
     );
 
-    public Inventory inventory1 = InventoryFactory.createInventory(product, ProductStatus.Few_IN_STOCK);
-    public Inventory inventory2 = InventoryFactory.createInventory(product, ProductStatus.Few_IN_STOCK);
-    public Inventory inventory3 = InventoryFactory.createInventory(product, ProductStatus.DISCONTINUED); // Invalid test
+    public Inventory inventory1 = InventoryFactory.createInventory(product, ProductStatus.FEW_IN_STOCK);
+    public Inventory inventory2 = InventoryFactory.createInventory(product, ProductStatus.FEW_IN_STOCK);
+    public Inventory inventory3 = InventoryFactory.createInventory(product, ProductStatus.OUT_OF_STOCK); // Invalid test
 
     @Test
     @Order(1)

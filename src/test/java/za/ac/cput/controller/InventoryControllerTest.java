@@ -47,8 +47,8 @@ class InventoryControllerTest {
                 sampleImage2
         );
 
-        inventory1 = InventoryFactory.createInventory(product1, ProductStatus.Few_IN_STOCK);
-        inventory2 = InventoryFactory.createInventory(product2, ProductStatus.Few_IN_STOCK);
+        inventory1 = InventoryFactory.createInventory(product1, ProductStatus.FEW_IN_STOCK);
+        inventory2 = InventoryFactory.createInventory(product2, ProductStatus.FEW_IN_STOCK);
     }
 
     @Test
@@ -88,7 +88,7 @@ class InventoryControllerTest {
         Inventory newInventory = new Inventory.Builder()
                 .copy(inventory1)
                 .setProduct(updatedProduct)
-                .setStatus(ProductStatus.DISCONTINUED)
+                .setStatus(ProductStatus.OUT_OF_STOCK)
                 .build();
 
         ResponseEntity<Inventory> postResponse = restTemplate.postForEntity(url, newInventory, Inventory.class);

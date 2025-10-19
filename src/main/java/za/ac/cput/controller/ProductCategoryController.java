@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.ProductCategory;
 import za.ac.cput.repository.ProductCategoryRepository;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
-@CrossOrigin(origins = "http://localhost:5173") // React frontend
+//@CrossOrigin(origins = "http://localhost:5173") // React frontend
 public class ProductCategoryController {
 
     @Autowired

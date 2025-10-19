@@ -8,13 +8,13 @@ function InventoryPage() {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8080/products")
+            .get("http://localhost:8080/products") // Use PRODUCTS endpoint, not inventory
             .then((response) => {
                 setProducts(response.data);
                 setLoading(false);
             })
             .catch((error) => {
-                console.error("Error fetching inventory:", error);
+                console.error("Error fetching products:", error);
                 setLoading(false);
             });
     }, []);
@@ -40,7 +40,10 @@ function InventoryPage() {
                         <tr key={product.productId}>
                             <td>{product.name}</td>
                             <td>{product.stock}</td>
-                            <td>{product.status}</td>
+                            <td>
+                                {product.stock <= 0 ? "OUT_OF_STOCK" :
+                                    product.stock <= 10 ? "FEW_IN_STOCK" : "IN_STOCK"}
+                            </td>
                         </tr>
                     ))
                 ) : (

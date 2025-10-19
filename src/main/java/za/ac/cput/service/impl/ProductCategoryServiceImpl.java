@@ -21,7 +21,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     public ProductCategory getById(Long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElse(null); // THIS METHOD
     }
 
     @Override
@@ -31,7 +31,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     public boolean delete(Long id) {
-        repository.deleteById(id);
-        return !repository.existsById(id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

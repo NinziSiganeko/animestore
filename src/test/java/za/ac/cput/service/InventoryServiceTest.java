@@ -44,8 +44,8 @@ class InventoryServiceTest {
                 sampleImage2
         );
 
-        inventory1 = InventoryFactory.createInventory(product1, ProductStatus.Few_IN_STOCK);
-        inventory2 = InventoryFactory.createInventory(product2, ProductStatus.Few_IN_STOCK);
+        inventory1 = InventoryFactory.createInventory(product1, ProductStatus.FEW_IN_STOCK);
+        inventory2 = InventoryFactory.createInventory(product2, ProductStatus.FEW_IN_STOCK);
     }
 
     @Test
@@ -70,7 +70,7 @@ class InventoryServiceTest {
     void update() {
         Inventory inventory = new Inventory.Builder()
                 .copy(inventory1)
-                .setStatus(ProductStatus.DISCONTINUED)
+                .setStatus(ProductStatus.OUT_OF_STOCK)
                 .build();
 
         Inventory updated = inventoryService.update(inventory);

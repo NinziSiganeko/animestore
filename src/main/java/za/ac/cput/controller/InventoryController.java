@@ -2,7 +2,6 @@ package za.ac.cput.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import za.ac.cput.domain.Admin;
 import za.ac.cput.domain.Inventory;
 import za.ac.cput.service.InventoryService;
 
@@ -10,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/inventory")
-@CrossOrigin(origins = "http://localhost:5173")
+//@CrossOrigin(origins = "http://localhost:5173") // ADD THIS LINE (or keep your existing one if you prefer)
 public class InventoryController {
     @Autowired
     private InventoryService inventoryService;
@@ -31,8 +30,8 @@ public class InventoryController {
     }
 
     @DeleteMapping("/delete/{inventoryId}")
-    public void delete(@PathVariable Long inventoryId){
-        inventoryService.delete(inventoryId);
+    public boolean delete(@PathVariable Long inventoryId){
+        return inventoryService.delete(inventoryId);
     }
 
     @GetMapping("/getAll")
