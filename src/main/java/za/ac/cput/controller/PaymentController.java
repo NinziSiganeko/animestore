@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/payment")
-@CrossOrigin(origins = "http://localhost:5173")
+//@CrossOrigin(origins = "http://localhost:5173")
 public class PaymentController {
 
     private final PaymentService service;
@@ -32,7 +32,7 @@ public class PaymentController {
             response.put("transactionReference", created.getTransactionReference());
             response.put("status", created.getStatus());
             response.put("amount", created.getAmount());
-            response.put("orderId", created.getCustomerOrder().getCustomerOrderId());
+            response.put("orderId", created.getCustomerOrder().getOrderId());
             response.put("orderDate", created.getCustomerOrder().getOrderDate());
             response.put("customerName", created.getCustomer().getFirstName() + " " + created.getCustomer().getLastName());
             response.put("customerEmail", created.getCustomer().getEmail());

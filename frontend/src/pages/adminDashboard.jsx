@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button, Form, Row, Col, Card } from "react-bootstrap";
 import api from "../utils/api";
 import ProductsPage from "./ProductsPage";
-import CustomersPage from "./CustomersPage";
 import InventoryPage from "./InventoryPage";
+import OrdersPage from "./OrdersPage";
 
 function AdminDashboard() {
   const [activePage, setActivePage] = useState("dashboard");
@@ -16,17 +16,18 @@ function AdminDashboard() {
     price: "",
     stock: "",
     categoryName: "",
-    status: "",
     productImage: null,
   });
 
   // Fetch categories
   const fetchCategories = async () => {
     try {
+      console.log("🟡 Fetching categories...");
       const response = await api.get("/categories");
+      console.log(" Categories fetched:", response.data);
       setCategories(response.data);
     } catch (err) {
-      console.error(err);
+      console.error(" Error fetching categories:", err);
     }
   };
 
@@ -39,6 +40,10 @@ function AdminDashboard() {
     const { name, value, files } = e.target;
     if (name === "productImage") {
       setFormData({ ...formData, productImage: files[0] });
+    } else if (name === "stock") {
+      // Prevent negative values for stock
+      const stockValue = Math.max(0, value);
+      setFormData({ ...formData, [name]: stockValue });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -47,14 +52,25 @@ function AdminDashboard() {
   // Submit product form
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("🟡 Form submission started...");
+
     if (!formData.name || !formData.price || !formData.stock || !formData.categoryName) {
       setError("Please fill in all required fields.");
+      return;
+    }
+
+    // Additional validation for stock
+    if (formData.stock < 0) {
+      setError("Stock cannot be negative.");
       return;
     }
 
     try {
       setLoading(true);
       setError("");
+
+      console.log("🟡 Step 1: Starting product creation process...");
+      console.log("Form data:", formData);
 
       // Find or create category
       let categoryId;
@@ -64,12 +80,21 @@ function AdminDashboard() {
 
       if (existingCategory) {
         categoryId = existingCategory.categoryId;
+        console.log(" Step 2: Using existing category ID:", categoryId);
       } else {
-        const categoryResponse = await api.post("/categories", {
-          categoryName: formData.categoryName,
-        });
-        categoryId = categoryResponse.data.categoryId;
-        await fetchCategories();
+        console.log("🟡 Step 2: Creating new category...");
+        try {
+          const categoryResponse = await api.post("/categories", {
+            categoryName: formData.categoryName,
+          });
+          console.log(" Category creation response:", categoryResponse);
+          categoryId = categoryResponse.data.categoryId;
+          console.log(" Step 2: Created new category ID:", categoryId);
+          await fetchCategories();
+        } catch (categoryError) {
+          console.error(" Category creation failed:", categoryError);
+          throw new Error(`Category creation failed: ${categoryError.response?.data?.message || categoryError.message}`);
+        }
       }
 
       // Create product with image
@@ -81,11 +106,47 @@ function AdminDashboard() {
 
       if (formData.productImage) {
         productFormData.append("productImage", formData.productImage);
+        console.log("🟡 Image attached to form data");
       }
 
-      await api.post("/products", productFormData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      console.log("🟡 Step 3: Sending product to backend...");
+      console.log("Product form data entries:");
+      for (let [key, value] of productFormData.entries()) {
+        console.log(`  ${key}:`, value);
+      }
+
+      // Create product first
+      let productResponse;
+      try {
+        productResponse = await api.post("/products", productFormData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        console.log(" Step 4: Product created successfully:", productResponse.data);
+      } catch (productError) {
+        console.error(" Product creation failed:", productError);
+        throw new Error(`Product creation failed: ${productError.response?.data?.message || productError.message}`);
+      }
+
+      const newProduct = productResponse.data;
+
+      // Create inventory record - backend will auto-calculate status
+      const inventoryData = {
+        product: {
+          productId: newProduct.productId
+        }
+      };
+
+      console.log("🟡 Step 5: Creating inventory record...");
+      console.log("Inventory data:", inventoryData);
+
+      try {
+        await api.post("/inventory/create", inventoryData);
+        console.log(" Step 6: Inventory created successfully");
+      } catch (inventoryError) {
+        console.error(" Inventory creation failed:", inventoryError);
+        // Don't throw error here - product was created successfully
+        console.log(" Product was created but inventory creation failed");
+      }
 
       // Reset form
       setFormData({
@@ -93,12 +154,35 @@ function AdminDashboard() {
         price: "",
         stock: "",
         categoryName: "",
-        status: "",
         productImage: null,
       });
+
+      alert("Product created successfully!");
+
     } catch (err) {
-      console.error(err);
-      setError("Failed to save product. " + (err.response?.data?.message || err.message));
+      console.error(" FINAL ERROR DETAILS:");
+      console.error("Error object:", err);
+      console.error("Error response:", err.response);
+      console.error("Error message:", err.message);
+      console.error("Error config:", err.config);
+
+      let errorMessage = "Failed to save product. ";
+
+      if (err.response) {
+        // Server responded with error status
+        errorMessage += `Server error: ${err.response.status} - ${err.response.statusText}`;
+        if (err.response.data) {
+          errorMessage += ` - ${JSON.stringify(err.response.data)}`;
+        }
+      } else if (err.request) {
+        // Request was made but no response received
+        errorMessage += "No response from server. Check if backend is running.";
+      } else {
+        // Something else happened
+        errorMessage += err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -125,13 +209,12 @@ function AdminDashboard() {
               Products
             </li>
             <li
-                className={`mb-2 ${activePage === "customers" ? "text-primary fw-bold" : ""}`}
-                onClick={() => setActivePage("customers")}
+                className={`mb-2 ${activePage === "orders" ? "text-primary fw-bold" : ""}`}
+                onClick={() => setActivePage("orders")}
                 style={{ cursor: "pointer" }}
             >
-              Customers
+              Orders
             </li>
-            <li className="mb-2">Orders</li>
             <li
                 className={`mb-2 ${activePage === "inventory" ? "text-primary fw-bold" : ""}`}
                 onClick={() => setActivePage("inventory")}
@@ -139,8 +222,6 @@ function AdminDashboard() {
             >
               Inventory
             </li>
-            <li className="mb-2">Reviews</li>
-            <li className="mb-2">Settings</li>
           </ul>
         </div>
 
@@ -149,7 +230,19 @@ function AdminDashboard() {
           {activePage === "dashboard" && (
               <Card className="p-4">
                 <h4 className="mb-3">Add New Product</h4>
-                {error && <div className="alert alert-danger">{error}</div>}
+                {/*<p className="text-muted mb-3">*/}
+                {/*  <strong>Status is automatically calculated:</strong><br/>*/}
+                {/*  • 0 stock → OUT_OF_STOCK<br/>*/}
+                {/*  • 1-10 stock → FEW_IN_STOCK<br/>*/}
+                {/*  • 11+ stock → IN_STOCK*/}
+                {/*</p>*/}
+
+                {error && (
+                    <div className="alert alert-danger">
+                      <strong>Error:</strong> {error}
+                    </div>
+                )}
+
                 <Form onSubmit={handleSubmit} encType="multipart/form-data">
                   {/* Product Name + Price */}
                   <Row>
@@ -161,6 +254,7 @@ function AdminDashboard() {
                             value={formData.name}
                             onChange={handleChange}
                             required
+                            disabled={loading}
                         />
                       </Form.Group>
                     </Col>
@@ -171,9 +265,11 @@ function AdminDashboard() {
                             name="price"
                             type="number"
                             step="0.01"
+                            min="0.01"
                             value={formData.price}
                             onChange={handleChange}
                             required
+                            disabled={loading}
                         />
                       </Form.Group>
                     </Col>
@@ -183,14 +279,19 @@ function AdminDashboard() {
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
-                        <Form.Label>Stock</Form.Label>
+                        <Form.Label>Stock Quantity</Form.Label>
                         <Form.Control
                             name="stock"
                             type="number"
+                            min="0"
                             value={formData.stock}
                             onChange={handleChange}
                             required
+                            disabled={loading}
                         />
+                        <Form.Text className="text-muted">
+                          Minimum value: 0
+                        </Form.Text>
                       </Form.Group>
                     </Col>
                     <Col md={6}>
@@ -201,6 +302,7 @@ function AdminDashboard() {
                             value={formData.categoryName}
                             onChange={handleChange}
                             required
+                            disabled={loading}
                         >
                           <option value="">Select a category</option>
                           <option value="Beanie">Beanie</option>
@@ -212,24 +314,8 @@ function AdminDashboard() {
                     </Col>
                   </Row>
 
-                  {/* Status + Image */}
+                  {/* Image only */}
                   <Row>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Status</Form.Label>
-                        <Form.Select
-                            name="status"
-                            value={formData.status}
-                            onChange={handleChange}
-                            required
-                        >
-                          <option value="">Choose Status</option>
-                          <option value="IN_STOCK">IN_STOCK</option>
-                          <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
-                          <option value="FEW_IN_STOCK">FEW_IN_STOCK</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label>Product Image</Form.Label>
@@ -238,20 +324,34 @@ function AdminDashboard() {
                             name="productImage"
                             accept="image/*"
                             onChange={handleChange}
+                            disabled={loading}
                         />
                       </Form.Group>
                     </Col>
                   </Row>
 
                   <Button variant="primary" type="submit" disabled={loading}>
-                    {loading ? "Saving..." : "Save Product"}
+                    {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Saving...
+                        </>
+                    ) : (
+                        "Save Product"
+                    )}
                   </Button>
+
+                  {loading && (
+                      <div className="mt-3">
+                        <small className="text-muted">Creating product... Check browser console for details.</small>
+                      </div>
+                  )}
                 </Form>
               </Card>
           )}
 
           {activePage === "products" && <ProductsPage />}
-          {activePage === "customers" && <CustomersPage />}
+          {activePage === "orders" && <OrdersPage />}
           {activePage === "inventory" && <InventoryPage />}
         </div>
       </div>

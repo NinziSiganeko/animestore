@@ -11,7 +11,8 @@ import Designs from "./pages/Designs";
 import ProductDetail from "./pages/ProductDetail";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/adminDashboard";
-import OrderSuccess from "./pages/OrderSuccess.jsx";
+import OrderSuccess from "./pages/OrderSuccess";
+import OrderDetails from "./pages/OrderDetails";
 
 function PrivateRoute({ children }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -131,9 +132,18 @@ function App() {
                         <Checkout />
                     </PrivateRoute>
                 } />
-                <Route path="success" element={
+
+                {/* Order Success Page */}
+                <Route path="order-success" element={
                     <PrivateRoute>
                         <OrderSuccess />
+                    </PrivateRoute>
+                } />
+
+                {/* Order Details Page */}
+                <Route path="order-details/:orderId" element={
+                    <PrivateRoute>
+                        <OrderDetails />
                     </PrivateRoute>
                 } />
 

@@ -14,11 +14,11 @@ function Checkout() {
 
     useEffect(() => {
         const token = localStorage.getItem("userToken");
-        const userEmail = localStorage.getItem("userEmail"); // Store email during signin
+        const userEmail = localStorage.getItem("userEmail");
         const userId = localStorage.getItem("userId");
 
         if (!token) return;
-        // Try to fetch by userId first, then by email
+
         const fetchCustomer = async () => {
             try {
                 let response;
@@ -42,12 +42,12 @@ function Checkout() {
         };
         fetchCustomer();
     }, [navigate]);
-    // Handle payment method selection (dropdown)
+
     const handlePaymentChange = (e) => {
         setPaymentMethod(e.target.value);
-        setPaymentDetails({}); // reset previous payment fields
+        setPaymentDetails({});
     };
-// Handle dynamic input fields
+
     const handleDetailChange = (e) => {
         const { name, value } = e.target;
         setPaymentDetails((prev) => ({
@@ -55,7 +55,7 @@ function Checkout() {
             [name]: value,
         }));
     };
-// Handle form submission
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -64,57 +64,82 @@ function Checkout() {
             return;
         }
 
+        if (cart.length === 0) {
+            alert("Your cart is empty. Add items to proceed.");
+            return;
+        }
+
         setLoading(true);
         try {
-            // Map the frontend method to backend enum
+            // 1. FIRST CREATE THE ORDER
+            const orderItems = cart.map(item => ({
+                product: {
+                    productId: item.id
+                },
+                quantity: item.qty,
+                unitPrice: item.price
+            }));
+
+            // Map frontend payment method to backend format
             const methodMap = {
                 card: "CREDIT_CARD",
-                eft: "EFT",
+                eft: "BANK_TRANSFER",
                 paypal: "PAYPAL",
             };
 
-            // Create a mock transaction reference
-            const transactionReference = `TXN-${Date.now()}`;
-
-            // Build payment request
-            const paymentRequest = {
-                amount: total,
-                method: methodMap[paymentMethod],
-                status: "PENDING",
-                transactionReference,
+            const orderRequest = {
                 customer: {
-                    userId: customer.userId,
-                    email: customer.email,
+                    userId: customer.userId
                 },
+                orderItems: orderItems,
+                paymentMethod: methodMap[paymentMethod] || "CASH",
+                shippingAddress: customer.address || "Customer Address",
+                totalAmount: total
             };
 
-            console.log("Submitting payment:", paymentRequest);
+            console.log("Creating order:", orderRequest);
 
-            // Send to backend
-            const response = await api.post("/payment/create", paymentRequest);
-            console.log("Payment success:", response.data);
+            // Create order in backend
+            const orderResponse = await api.post("/orders/create", orderRequest);
+            console.log("Order created successfully:", orderResponse.data);
 
-            const paymentData = response.data; // save for clarity
+            const createdOrder = orderResponse.data;
 
+            // 2. THEN CREATE PAYMENT RECORD
+            const transactionReference = `TXN-${Date.now()}`;
+
+            const paymentRequest = {
+                amount: total,
+                method: methodMap[paymentMethod] || "CASH",
+                status: "COMPLETED",
+                transactionReference: transactionReference,
+                customer: {
+                    userId: customer.userId
+                },
+                customerOrder: {
+                    orderId: createdOrder.orderId
+                }
+            };
+
+            console.log("Creating payment:", paymentRequest);
+            const paymentResponse = await api.post("/payment/create", paymentRequest);
+            console.log("Payment created successfully:", paymentResponse.data);
+
+            // 3. CLEAR CART AND NAVIGATE TO SUCCESS PAGE
             clearCart();
 
-
-            navigate("/success", {
+            // Navigate to order success page
+            navigate("/order-success", {
                 state: {
-                    orderId: paymentData.orderId,
-                    paymentId: paymentData.paymentId,
-                    amount: paymentData.amount,
-                    status: paymentData.status,
-                    transactionReference: paymentData.transactionReference,
-                    customerEmail: paymentData.customerEmail,
-                    customerName: paymentData.customerName,
-                    orderDate: paymentData.orderDate,
-                    cartItems: cart,
-                },
+                    order: createdOrder,
+                    payment: paymentResponse.data,
+                    customer: customer
+                }
             });
+
         } catch (error) {
-            console.error("Payment failed:", error);
-            alert("Payment could not be processed. Please try again.");
+            console.error("Checkout failed:", error);
+            alert(`Checkout failed: ${error.response?.data?.message || error.message}`);
         } finally {
             setLoading(false);
         }
@@ -139,9 +164,9 @@ function Checkout() {
                                         key={item.id}
                                         className="list-group-item d-flex justify-content-between"
                                     >
-                    <span>
-                      {item.name} (x{item.qty})
-                    </span>
+                                        <span>
+                                            {item.name} (x{item.qty})
+                                        </span>
                                         <span>R {(item.price * item.qty).toFixed(2)}</span>
                                     </li>
                                 ))
@@ -170,6 +195,12 @@ function Checkout() {
                                         {customer
                                             ? `${customer.firstName} ${customer.lastName}`
                                             : "Loading..."}
+                                    </p>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Email</label>
+                                    <p className="form-control-plaintext">
+                                        {customer ? customer.email : "Loading..."}
                                     </p>
                                 </div>
                                 <div className="mb-3">
@@ -264,7 +295,7 @@ function Checkout() {
                                 <button
                                     type="submit"
                                     className="btn btn-dark w-100"
-                                    disabled={loading}
+                                    disabled={loading || cart.length === 0}
                                 >
                                     {loading ? "Processing..." : "Place Order"}
                                 </button>
@@ -276,4 +307,5 @@ function Checkout() {
         </div>
     );
 }
+
 export default Checkout;

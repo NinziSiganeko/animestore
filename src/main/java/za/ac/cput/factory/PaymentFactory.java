@@ -28,7 +28,7 @@ public class PaymentFactory {
                 return null;
             }
         }
-        LocalDateTime date = Helper.getDate(paymentDate);
+        LocalDateTime date = Helper.getCurrentDateTime();
 
         return new Payment.Builder()
                 .setAmount(amount)
