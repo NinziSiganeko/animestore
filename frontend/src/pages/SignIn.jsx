@@ -163,14 +163,7 @@ function SignIn() {
                     <a href="/signup" className="text-primary">Sign Up</a>
                 </p>
 
-                {/* Development helper - Remove in production */}
-                {process.env.NODE_ENV === 'development' && (
-                    <div className="mt-3 p-2 bg-light rounded small">
-                        <strong>Dev Helper:</strong><br/>
-                        Admin: admin@animestore.co.za / naidoo_1@dev<br/>
-                        Customer: Use your registered email/password
-                    </div>
-                )}
+
             </form>
         </div>
     );
