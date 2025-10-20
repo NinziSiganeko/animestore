@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 function SignUp() {
@@ -12,11 +12,17 @@ function SignUp() {
     });
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [userName, setUserName] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("userName");
+        if (storedName) setUserName(storedName);
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (e) => {
@@ -42,7 +48,6 @@ function SignUp() {
                     phoneNumber: ""
                 });
 
-                // Redirect to SignIn page after successful signup
                 navigate("/signin");
             } else {
                 let data;
@@ -56,50 +61,132 @@ function SignUp() {
     };
 
     return (
-        <div className="container py-5" style={{ maxWidth: "500px" }}>
-            <h2 className="fw-bold mb-4 text-center">Sign Up</h2>
+        <div
+            style={{
+                backgroundImage: "url('https://wallpaperaccess.com/full/9824285.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                minHeight: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "#fff",
+            }}
+        >
+            <div
+                className="container py-5"
+                style={{
+                    maxWidth: "500px",
+                    backgroundColor: "rgba(18,79,143,0.8)",
+                    borderRadius: "15px",
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.3)",
+                    padding: "40px",
+                    backdropFilter: "blur(5px)",
+                }}
+            >
+                {userName && (
+                    <h4 className="text-center mb-3 text-light">Hi, {userName} 👋</h4>
+                )}
+                <h2 className="fw-bold mb-4 text-center text-white">Sign Up</h2>
 
-            {error && <div className="alert alert-danger">{error}</div>}
-            {success && <div className="alert alert-success">{success}</div>}
+                {error && <div className="alert alert-danger">{error}</div>}
+                {success && <div className="alert alert-success">{success}</div>}
 
-            <form onSubmit={handleSubmit}>
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <label className="form-label">First Name</label>
-                        <input type="text" className="form-control" name="firstName" value={formData.firstName} onChange={handleChange} required />
+                <form onSubmit={handleSubmit}>
+                    <div className="row">
+                        <div className="col-md-6 mb-3">
+                            <label className="form-label text-light">First Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <label className="form-label text-light">Last Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
                     </div>
-                    <div className="col-md-6 mb-3">
-                        <label className="form-label">Last Name</label>
-                        <input type="text" className="form-control" name="lastName" value={formData.lastName} onChange={handleChange} required />
+
+                    <div className="mb-3">
+                        <label className="form-label text-light">Email</label>
+                        <input
+                            type="email"
+                            className="form-control"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
                     </div>
-                </div>
+                    <div className="mb-3">
+                        <label className="form-label text-light">Password</label>
+                        <input
+                            type="password"
+                            className="form-control"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label text-light">Address</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label text-light">Phone Number</label>
+                        <input
+                            type="tel"
+                            className="form-control"
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input type="email" className="form-control" name="email" value={formData.email} onChange={handleChange} required />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Password</label>
-                    <input type="password" className="form-control" name="password" value={formData.password} onChange={handleChange} required />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Address</label>
-                    <input type="text" className="form-control" name="address" value={formData.address} onChange={handleChange} required />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Phone Number</label>
-                    <input type="tel" className="form-control" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
-                </div>
+                    <button
+                        type="submit"
+                        className="btn w-100 mt-3"
+                        style={{
+                            backgroundColor: "#0D6EFD",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            border: "none",
+                        }}
+                    >
+                        Sign Up
+                    </button>
 
-                <button type="submit" className="btn btn-primary w-100 mt-3">Sign Up</button>
-
-                <p className="text-center mt-3">
-                    Already have an account? <Link to="/signin" className="text-primary">Sign In</Link>
-                </p>
-
-            </form>
+                    <p className="text-center mt-3 text-white">
+                        Already have an account?{" "}
+                        <Link to="/signin" className="text-warning fw-bold">
+                            Sign In
+                        </Link>
+                    </p>
+                </form>
+            </div>
         </div>
     );
 }
+
 export default SignUp;
 
