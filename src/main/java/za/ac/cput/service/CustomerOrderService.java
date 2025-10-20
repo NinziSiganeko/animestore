@@ -10,6 +10,9 @@ import za.ac.cput.domain.Product;
 import za.ac.cput.factory.CustomerOrderFactory;
 import za.ac.cput.repository.CustomerOrderRepository;
 import za.ac.cput.repository.ProductRepository;
+import za.ac.cput.util.Helper;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,26 +27,66 @@ public class CustomerOrderService implements ICustomerOrderService {
     @Override
     @Transactional
     public CustomerOrder create(CustomerOrder order) {
-        // Save the order first
-        CustomerOrder savedOrder = orderRepository.save(order);
-
-        // Update stock for each item in the order
-        for (OrderItem item : savedOrder.getOrderItems()) {
-            Product product = item.getProduct();
-//            int newStock = product.getStock() - item.getQuantity();
-//            product.setStock(newStock);
-            productRepository.save(product);
+        // Generate order number if missing
+        if (order.getOrderNumber() == null || order.getOrderNumber().isEmpty()) {
+            order.setOrderNumber(Helper.generateOrderNumber());
         }
 
+        // Set order date if missing
+        if (order.getOrderDate() == null) {
+            order.setOrderDate(LocalDateTime.now());
+        }
+
+        // Calculate total if missing
+        if (order.getTotalAmount() == null) {
+            order.setTotalAmount(order.calculateTotal());
+        }
+
+        // CRITICAL: Update stock for each product before saving order
+        if (order.getOrderItems() != null) {
+            for (OrderItem item : order.getOrderItems()) {
+                if (item.getProduct() != null && item.getQuantity() != null) {
+                    // Get the product from database to ensure we have the latest stock
+                    Product product = productRepository.findById(item.getProduct().getProductId())
+                            .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProduct().getProductId()));
+
+                    // Check if enough stock exists
+                    if (product.getStock() < item.getQuantity()) {
+                        throw new RuntimeException("Insufficient stock for product: " + product.getName() +
+                                ". Available: " + product.getStock() + ", Requested: " + item.getQuantity());
+                    }
+
+                    // Update stock
+                    int newStock = product.getStock() - item.getQuantity();
+                    product.setStock(newStock);
+                    productRepository.save(product);
+
+                    System.out.println(" Updated stock for " + product.getName() + ": " +
+                            product.getStock() + " -> " + newStock);
+                }
+            }
+        }
+
+        // Ensure all order items are properly linked to this order
+        if (order.getOrderItems() != null) {
+            for (OrderItem item : order.getOrderItems()) {
+                item.setOrder(order);
+            }
+        }
+
+        // Save the order
+        CustomerOrder savedOrder = orderRepository.save(order);
         return savedOrder;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerOrder read(Long orderId) {
         return orderRepository.findById(orderId).orElse(null);
     }
 
     @Override
+    @Transactional
     public CustomerOrder update(CustomerOrder order) {
         if (orderRepository.existsById(order.getOrderId())) {
             return orderRepository.save(order);
@@ -52,8 +95,25 @@ public class CustomerOrderService implements ICustomerOrderService {
     }
 
     @Override
+    @Transactional
     public boolean delete(Long orderId) {
         if (orderRepository.existsById(orderId)) {
+            // Optional: Restore stock when order is deleted
+            CustomerOrder order = orderRepository.findById(orderId).orElse(null);
+            if (order != null && order.getOrderItems() != null) {
+                for (OrderItem item : order.getOrderItems()) {
+                    if (item.getProduct() != null && item.getQuantity() != null) {
+                        Product product = productRepository.findById(item.getProduct().getProductId()).orElse(null);
+                        if (product != null) {
+                            int newStock = product.getStock() + item.getQuantity();
+                            product.setStock(newStock);
+                            productRepository.save(product);
+                            System.out.println(" Restored stock for " + product.getName() + ": " +
+                                    product.getStock() + " -> " + newStock);
+                        }
+                    }
+                }
+            }
             orderRepository.deleteById(orderId);
             return true;
         }
@@ -61,18 +121,23 @@ public class CustomerOrderService implements ICustomerOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerOrder> getOrdersByCustomerId(Long userId) {
         return orderRepository.findByCustomerUserId(userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerOrder getOrderByOrderNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber);
     }
+
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerOrder> getAll() {
         return orderRepository.findAll();
     }
+
     // Add this method to CustomerOrderService
     @Transactional
     public CustomerOrder createOrderFromDetails(Customer customer, List<OrderItem> orderItems,
@@ -80,17 +145,78 @@ public class CustomerOrderService implements ICustomerOrderService {
         // Use the factory to create order with generated number
         CustomerOrder order = CustomerOrderFactory.createOrder(customer, orderItems, paymentMethod, shippingAddress);
 
-        // Then save and process stock
-        CustomerOrder savedOrder = orderRepository.save(order);
+        // CRITICAL: Update stock for each product before saving order
+        if (order.getOrderItems() != null) {
+            for (OrderItem item : order.getOrderItems()) {
+                if (item.getProduct() != null && item.getQuantity() != null) {
+                    // Get the product from database to ensure we have the latest stock
+                    Product product = productRepository.findById(item.getProduct().getProductId())
+                            .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProduct().getProductId()));
 
-        // Update stock
-        for (OrderItem item : savedOrder.getOrderItems()) {
-            Product product = item.getProduct();
-//            int newStock = product.getStock() - item.getQuantity();
-//            product.setStock(newStock);
-            productRepository.save(product);
+                    // Check if enough stock exists
+                    if (product.getStock() < item.getQuantity()) {
+                        throw new RuntimeException("Insufficient stock for product: " + product.getName() +
+                                ". Available: " + product.getStock() + ", Requested: " + item.getQuantity());
+                    }
+
+                    // Update stock
+                    int newStock = product.getStock() - item.getQuantity();
+                    product.setStock(newStock);
+                    productRepository.save(product);
+
+                    System.out.println(" Updated stock for " + product.getName() + ": " +
+                            product.getStock() + " -> " + newStock);
+                }
+            }
         }
 
+        // Then save the order
+        CustomerOrder savedOrder = orderRepository.save(order);
         return savedOrder;
+    }
+
+    // NEW: Method to check if order can be fulfilled (all items in stock)
+    @Transactional(readOnly = true)
+    public boolean canFulfillOrder(List<OrderItem> orderItems) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            return false;
+        }
+
+        for (OrderItem item : orderItems) {
+            if (item.getProduct() != null && item.getQuantity() != null) {
+                Product product = productRepository.findById(item.getProduct().getProductId()).orElse(null);
+                if (product == null || product.getStock() < item.getQuantity()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // NEW: Method to get order summary with stock validation
+    @Transactional(readOnly = true)
+    public String getOrderStockValidationSummary(List<OrderItem> orderItems) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            return "No items in order";
+        }
+
+        StringBuilder summary = new StringBuilder();
+        for (OrderItem item : orderItems) {
+            if (item.getProduct() != null && item.getQuantity() != null) {
+                Product product = productRepository.findById(item.getProduct().getProductId()).orElse(null);
+                if (product == null) {
+                    summary.append(" Product not found: ").append(item.getProduct().getProductId()).append("\n");
+                } else if (product.getStock() < item.getQuantity()) {
+                    summary.append(" Insufficient stock for ").append(product.getName())
+                            .append(": Available ").append(product.getStock())
+                            .append(", Requested ").append(item.getQuantity()).append("\n");
+                } else {
+                    summary.append(" ").append(product.getName())
+                            .append(": Available ").append(product.getStock())
+                            .append(", Requested ").append(item.getQuantity()).append("\n");
+                }
+            }
+        }
+        return summary.toString();
     }
 }
