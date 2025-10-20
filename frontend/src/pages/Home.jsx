@@ -5,21 +5,29 @@ import { useCart } from "../context/CartContext";
 function Home() {
     const { addToCart } = useCart();
     const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Fetch first 12 products from backend
+    // Fetch only available products (stock > 0) from backend
     useEffect(() => {
-        fetch("http://localhost:8080/products")
+        fetch("http://localhost:8080/products/available")
             .then((res) => {
                 if (!res.ok) throw new Error("Failed to fetch products");
                 return res.json();
             })
-            .then((data) => setProducts(data.slice(0, 12))) // take only first 12
-            .catch((err) => console.error("Error fetching products:", err));
+            .then((data) => {
+                // Take only first 12 available products
+                setProducts(data.slice(0, 12));
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Error fetching products:", err);
+                setLoading(false);
+            });
     }, []);
 
     return (
         <div>
-            {/* Hero Section with Carousel */}
+            {/* Hero Section with Carousel - UNCHANGED */}
             <header>
                 <div
                     id="heroCarousel"
@@ -128,48 +136,69 @@ function Home() {
             {/* Best Sellers Section */}
             <main className="container py-5">
                 <h2 className="text-center mb-5 fw-bold text-primary">Best Sellers</h2>
-                <div className="row g-4">
-                    {products.length > 0 ? (
-                        products.map((p) => (
-                            <div className="col-md-6 col-lg-4" key={p.productId}>
-                                <div className="card shadow-lg border-0 h-100 hover-shadow">
-                                    <Link to={`/product/${p.productId}`}>
-                                        <img
-                                            src={
-                                                p.productImage
-                                                    ? `data:image/jpeg;base64,${p.productImage}`
-                                                    : "/img/placeholder.png"
-                                            }
-                                            alt={p.name}
-                                            className="card-img-top"
-                                            style={{
-                                                height: "250px",   //  uniform image height
-                                                objectFit: "cover", //  keeps images same size
-                                            }}
-                                            onError={(e) => (e.target.src = "/img/placeholder.png")}
-                                        />
-                                    </Link>
-                                    <div className="card-body text-center">
-                                        <h5 className="card-title text-secondary">{p.name}</h5>
-                                        <p className="text-muted">R {p.price.toFixed(2)}</p>
-                                        <button
-                                            className="btn btn-primary btn-sm"
-                                            onClick={() => addToCart(p)}
-                                            disabled={p.stock === 0}
-                                        >
-                                            <i className="bi bi-cart me-1"></i> Add to Cart
-                                        </button>
+
+                {loading ? (
+                    <div className="text-center">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                        <p className="mt-2 text-muted">Loading products...</p>
+                    </div>
+                ) : (
+                    <div className="row g-4">
+                        {products.length > 0 ? (
+                            products.map((p) => (
+                                <div className="col-md-6 col-lg-4" key={p.productId}>
+                                    <div className="card shadow-lg border-0 h-100 hover-shadow">
+                                        <Link to={`/product/${p.productId}`}>
+                                            <img
+                                                src={
+                                                    p.productImage
+                                                        ? `data:image/jpeg;base64,${p.productImage}`
+                                                        : "/img/placeholder.png"
+                                                }
+                                                alt={p.name}
+                                                className="card-img-top"
+                                                style={{
+                                                    height: "250px",   // uniform image height
+                                                    objectFit: "cover", // keeps images same size
+                                                }}
+                                                onError={(e) => (e.target.src = "/img/placeholder.png")}
+                                            />
+                                        </Link>
+                                        <div className="card-body text-center">
+                                            <h5 className="card-title text-secondary">{p.name}</h5>
+                                            <p className="text-muted">R {p.price.toFixed(2)}</p>
+                                            <p className="text-success">
+                                                In Stock: {p.stock}
+                                            </p>
+                                            <button
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => addToCart(p)}
+                                            >
+                                                <i className="bi bi-cart me-1"></i> Add to Cart
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="col-12 text-center">
+                                <div className="py-5">
+                                    <i className="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                    <h4 className="text-muted">No Products Available</h4>
+                                    <p className="text-muted">Check back later for new arrivals!</p>
+                                    <Link to="/catalog" className="btn btn-outline-primary mt-2">
+                                        Browse Catalog
+                                    </Link>
+                                </div>
                             </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-muted">Loading products...</p>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
             </main>
 
-            {/* About Section */}
+            {/* About Section - UNCHANGED */}
             <section
                 className="py-5 text-white"
                 style={{
@@ -188,7 +217,7 @@ function Home() {
                 >
                     <h2 className="display-5 fw-bold mb-4 text-primary">Why Choose AnimeStore?</h2>
                     <p className="lead mb-5">
-                        AnimeStore isn’t just about fashion it’s about passion. We blend premium fabrics with
+                        AnimeStore isn't just about fashion it's about passion. We blend premium fabrics with
                         authentic anime-inspired designs, crafted locally for fans who live and breathe anime culture.
                     </p>
 
@@ -247,7 +276,6 @@ function Home() {
                     <p className="mt-3 text-white-50">Follow us for new drops and exclusive deals</p>
                 </div>
             </section>
-
         </div>
     );
 }

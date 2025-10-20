@@ -19,7 +19,7 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
-    private ProductCategoryService categoryService; // ADD THIS
+    private ProductCategoryService categoryService;
 
     @PostMapping
     public ResponseEntity<Product> createProduct(
@@ -28,6 +28,11 @@ public class ProductController {
             @RequestParam int stock,
             @RequestParam Long category_Id,
             @RequestParam(required = false) MultipartFile productImage) throws IOException {
+
+        // Validate stock
+        if (stock < 0) {
+            return ResponseEntity.badRequest().build();
+        }
 
         // 1. GET THE CATEGORY FROM DATABASE
         ProductCategory category = categoryService.getById(category_Id);
@@ -40,14 +45,14 @@ public class ProductController {
                 .setName(name)
                 .setPrice(price)
                 .setStock(stock)
-                .setCategory(category) // SET THE CATEGORY HERE
+                .setCategory(category)
                 .build();
 
         if (productImage != null && !productImage.isEmpty()) {
             product.setProductImage(productImage.getBytes());
         }
 
-        // 3. SAVE PRODUCT (Inventory will be auto-created in ProductService/InventoryService)
+        // 3. SAVE PRODUCT
         Product savedProduct = productService.create(product);
         return ResponseEntity.ok(savedProduct);
     }
@@ -58,6 +63,27 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    // NEW: Get only available products (stock > 0)
+    @GetMapping("/available")
+    public ResponseEntity<List<Product>> getAvailableProducts() {
+        List<Product> availableProducts = productService.getAllAvailableProducts();
+        return ResponseEntity.ok(availableProducts);
+    }
+
+    // NEW: Get out of stock products
+    @GetMapping("/out-of-stock")
+    public ResponseEntity<List<Product>> getOutOfStockProducts() {
+        List<Product> outOfStockProducts = productService.getOutOfStockProducts();
+        return ResponseEntity.ok(outOfStockProducts);
+    }
+
+    // NEW: Get low stock products
+    @GetMapping("/low-stock")
+    public ResponseEntity<List<Product>> getLowStockProducts(@RequestParam(defaultValue = "10") int threshold) {
+        List<Product> lowStockProducts = productService.getLowStockProducts(threshold);
+        return ResponseEntity.ok(lowStockProducts);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Product product = productService.getById(id);
@@ -65,6 +91,20 @@ public class ProductController {
             return ResponseEntity.ok(product);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // NEW: Check if product is available in specific quantity
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<Boolean> checkProductAvailability(@PathVariable Long id, @RequestParam int quantity) {
+        boolean isAvailable = productService.isProductAvailable(id, quantity);
+        return ResponseEntity.ok(isAvailable);
+    }
+
+    // NEW: Get available stock for a product
+    @GetMapping("/{id}/stock")
+    public ResponseEntity<Integer> getProductStock(@PathVariable Long id) {
+        int stock = productService.getAvailableStock(id);
+        return ResponseEntity.ok(stock);
     }
 
     @PutMapping("/{id}")
@@ -83,6 +123,42 @@ public class ProductController {
             return ResponseEntity.ok(updatedProduct);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // NEW: Update stock endpoint
+    @PutMapping("/{id}/stock")
+    public ResponseEntity<Product> updateProductStock(@PathVariable Long id, @RequestParam int stock) {
+        try {
+            Product updatedProduct = productService.updateStock(id, stock);
+            if (updatedProduct != null) {
+                return ResponseEntity.ok(updatedProduct);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // NEW: Decrease stock endpoint (for orders)
+    @PutMapping("/{id}/decrease-stock")
+    public ResponseEntity<Product> decreaseProductStock(@PathVariable Long id, @RequestParam int quantity) {
+        try {
+            Product updatedProduct = productService.decreaseStock(id, quantity);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    // NEW: Increase stock endpoint
+    @PutMapping("/{id}/increase-stock")
+    public ResponseEntity<Product> increaseProductStock(@PathVariable Long id, @RequestParam int quantity) {
+        try {
+            Product updatedProduct = productService.increaseStock(id, quantity);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @DeleteMapping("/{id}")

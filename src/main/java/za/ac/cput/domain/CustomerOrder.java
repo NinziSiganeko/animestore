@@ -24,8 +24,8 @@ public class CustomerOrder {
 
     private Double totalAmount;
 
-    @Column(name = "status")
-    private String status = "CONFIRMED";
+//    @Column(name = "status")
+//    private String status = "CONFIRMED";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -49,7 +49,7 @@ public class CustomerOrder {
         this.orderNumber = builder.orderNumber;
         this.orderDate = builder.orderDate;
         this.totalAmount = builder.totalAmount;
-        this.status = builder.status;
+        //this.status = builder.status;
         this.customer = builder.customer;
         this.orderItems = builder.orderItems;
         this.paymentMethod = builder.paymentMethod;
@@ -68,7 +68,7 @@ public class CustomerOrder {
     public String getOrderNumber() { return orderNumber; }
     public LocalDateTime getOrderDate() { return orderDate; }
     public Double getTotalAmount() { return totalAmount; }
-    public String getStatus() { return status; }
+    //public String getStatus() { return status; }
     public Customer getCustomer() { return customer; }
     public List<OrderItem> getOrderItems() { return orderItems; }
     public String getPaymentMethod() { return paymentMethod; }
@@ -79,7 +79,7 @@ public class CustomerOrder {
     public void setOrderNumber(String orderNumber) { this.orderNumber = orderNumber; }
     public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
     public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
-    public void setStatus(String status) { this.status = status; }
+   // public void setStatus(String status) { this.status = status; }
     public void setCustomer(Customer customer) { this.customer = customer; }
     public void setOrderItems(List<OrderItem> orderItems) { this.orderItems = orderItems; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
@@ -137,7 +137,7 @@ public class CustomerOrder {
             this.orderNumber = order.orderNumber;
             this.orderDate = order.orderDate;
             this.totalAmount = order.totalAmount;
-            this.status = order.status;
+            //this.status = order.status;
             this.customer = order.customer;
             this.orderItems = order.orderItems;
             this.paymentMethod = order.paymentMethod;
@@ -155,7 +155,7 @@ public class CustomerOrder {
                 ", orderNumber='" + orderNumber + '\'' +
                 ", orderDate=" + orderDate +
                 ", totalAmount=" + totalAmount +
-                ", status='" + status + '\'' +
+               // ", status='" + status + '\'' +
                 ", customerId=" + getCustomerId() +
                 ", orderItems=" + (orderItems != null ? orderItems.size() : 0) +
                 ", paymentMethod='" + paymentMethod + '\'' +

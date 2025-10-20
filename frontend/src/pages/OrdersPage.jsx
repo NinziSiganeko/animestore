@@ -14,7 +14,16 @@ function OrdersPage() {
             try {
                 const response = await axios.get("http://localhost:8080/orders");
                 console.log(" Orders data:", response.data);
-                setOrders(response.data);
+
+                // Filter out empty/invalid orders (like the #2 order with no customer)
+                const validOrders = response.data.filter(order =>
+                    order.customer &&
+                    (order.customer.firstName || order.customer.lastName || order.customer.email) &&
+                    order.orderItems &&
+                    order.orderItems.length > 0
+                );
+
+                setOrders(validOrders);
             } catch (error) {
                 console.error(" Error fetching orders:", error);
             } finally {
@@ -75,15 +84,6 @@ function OrdersPage() {
                     <div>
                         <Badge bg="primary" className="me-2">
                             Total: {orders.length}
-                        </Badge>
-                        <Badge bg="warning" className="me-2">
-                            Pending:{" "}
-                            {orders.filter(
-                                (o) => o.status === "PENDING" || o.status === "CONFIRMED"
-                            ).length}
-                        </Badge>
-                        <Badge bg="success">
-                            Completed: {orders.filter((o) => o.status === "DELIVERED").length}
                         </Badge>
                     </div>
                 </div>
