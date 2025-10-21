@@ -7,6 +7,7 @@ function UserDashboard() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState({
+        userId: "",
         firstName: "",
         lastName: "",
         email: "",
@@ -17,59 +18,55 @@ function UserDashboard() {
     const navigate = useNavigate();
     const userId = localStorage.getItem("userId");
 
-    // Fetch profile
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                console.log(" Fetching profile for user ID:", userId);
-                const response = await api.get(`/customer/read/${userId}`);
-                console.log(" Profile data:", response.data);
-                setProfile(response.data);
-            } catch (err) {
-                console.error(" Error loading profile:", err);
-                console.error(" Profile error details:", err.response?.data);
-            }
-        };
-
-        if (userId) {
-            fetchProfile();
-        } else {
-            console.log(" No user ID found for profile");
+    // 🔹 Reusable fetchProfile function
+    const fetchProfile = async () => {
+        try {
+            console.log("Fetching profile for user ID:", userId);
+            const response = await api.get(`/customer/read/${userId}`);
+            console.log("Profile data:", response.data);
+            setProfile(response.data);
+        } catch (err) {
+            console.error("Error loading profile:", err);
         }
+    };
+
+    // 🔹 Fetch profile when component mounts
+    useEffect(() => {
+        if (userId) fetchProfile();
     }, [userId]);
 
-    // Fetch orders
+    // 🔹 Fetch orders
     useEffect(() => {
         const fetchOrders = async () => {
             try {
                 setLoading(true);
-                console.log(" Fetching orders for user ID:", userId);
-
+                console.log("Fetching orders for user ID:", userId);
                 const response = await api.get(`/orders/customer/${userId}`);
-                console.log(" Orders API Response:", response.data);
                 setOrders(response.data);
             } catch (err) {
-                console.error(" Error loading orders:", err);
+                console.error("Error loading orders:", err);
             } finally {
                 setLoading(false);
             }
         };
-
-        if (userId) {
-            fetchOrders();
-        } else {
-            console.log(" No user ID found for orders");
-            setLoading(false);
-        }
+        if (userId) fetchOrders();
     }, [userId]);
 
+    // 🔹 Update profile (matches your backend)
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
         try {
-            await api.put(`/customers/${userId}`, profile);
+            console.log("Updating profile:", profile);
+
+            // Include userId in the body, since backend expects it
+            const response = await api.post("/customer/update", { ...profile, userId });
+            console.log("Profile updated:", response.data);
+
             alert("Profile updated successfully!");
+            await fetchProfile(); // Refresh profile data
         } catch (err) {
-            alert("Failed to update profile");
+            console.error("Error updating profile:", err);
+            alert("Failed to update profile. Please try again.");
         }
     };
 
@@ -80,14 +77,13 @@ function UserDashboard() {
             DELIVERED: { class: "bg-success", text: "Delivered" },
             CANCELLED: { class: "bg-danger", text: "Cancelled" },
         };
-
         const config = statusConfig[status] || { class: "bg-secondary", text: status };
         return <span className={`badge ${config.class}`}>{config.text}</span>;
     };
 
     return (
         <div className="container py-5">
-            <h2 className="fw-bold mb-4"> My Dashboard</h2>
+            <h2 className="fw-bold mb-4">My Dashboard</h2>
             <div className="row">
                 {/* Sidebar */}
                 <div className="col-md-3 mb-4">
@@ -115,16 +111,12 @@ function UserDashboard() {
                 <div className="col-md-9">
                     <div className="card shadow-sm">
                         <div className="card-body">
-                            {/* ======================= ORDERS TAB ======================= */}
                             {tab === "orders" && (
                                 <>
-                                    <h5 className="fw-bold mb-3"> My Orders</h5>
-
+                                    <h5 className="fw-bold mb-3">My Orders</h5>
                                     {loading ? (
                                         <div className="text-center py-4">
-                                            <div className="spinner-border" role="status">
-                                                <span className="visually-hidden">Loading...</span>
-                                            </div>
+                                            <div className="spinner-border" role="status"></div>
                                             <p className="mt-2">Loading your orders...</p>
                                         </div>
                                     ) : orders.length > 0 ? (
@@ -146,14 +138,12 @@ function UserDashboard() {
                                                             </p>
                                                         </div>
                                                     </div>
-
-                                                    {/* Items */}
                                                     <div className="mb-3">
-                                                        <p className="fw-bold mb-2"> Items:</p>
+                                                        <p className="fw-bold mb-2">Items:</p>
                                                         {order.orderItems && order.orderItems.length > 0 ? (
                                                             <ul className="list-unstyled mb-0">
                                                                 {order.orderItems.map((item, index) => (
-                                                                    <li key={index} className="mb-1">
+                                                                    <li key={index}>
                                                                         {item.product?.name || "Product"} ×{item.quantity} – R{" "}
                                                                         {(item.subtotal || 0).toFixed(2)}
                                                                     </li>
@@ -163,19 +153,14 @@ function UserDashboard() {
                                                             <p className="text-muted mb-0">No items found</p>
                                                         )}
                                                     </div>
-
-                                                    {/* Shipping */}
                                                     <div className="mb-3">
-                                                        <p className="fw-bold mb-1"> Shipping:</p>
+                                                        <p className="fw-bold mb-1">Shipping:</p>
                                                         <p className="mb-0">
-                                                            {order.shippingAddress ||
-                                                                "No shipping address provided"}
+                                                            {order.shippingAddress || "No shipping address provided"}
                                                         </p>
                                                     </div>
-
-                                                    {/* Payment */}
                                                     <div className="mb-3">
-                                                        <p className="fw-bold mb-1"> Payment:</p>
+                                                        <p className="fw-bold mb-1">Payment:</p>
                                                         <p className="mb-0">
                                                             {order.paymentMethod || "Not specified"} |{" "}
                                                             <strong>Total:</strong> R{" "}
@@ -187,9 +172,6 @@ function UserDashboard() {
                                         </div>
                                     ) : (
                                         <div className="text-center py-4">
-                                            <div className="text-muted mb-3">
-                                                <i className="fas fa-box-open fa-3x"></i>
-                                            </div>
                                             <h5>No orders yet</h5>
                                             <p className="text-muted">
                                                 Start shopping to see your orders here!
@@ -205,10 +187,9 @@ function UserDashboard() {
                                 </>
                             )}
 
-                            {/* ======================= PROFILE TAB ======================= */}
                             {tab === "profile" && (
                                 <>
-                                    <h5 className="fw-bold mb-3"> Profile Settings</h5>
+                                    <h5 className="fw-bold mb-3">Profile Settings</h5>
                                     <form onSubmit={handleProfileUpdate}>
                                         <div className="row">
                                             <div className="col-md-6 mb-3">
@@ -293,3 +274,4 @@ function UserDashboard() {
 }
 
 export default UserDashboard;
+
