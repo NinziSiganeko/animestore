@@ -3,6 +3,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { NavLink, useNavigate, Outlet, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useState, useEffect } from "react";
+import ChatbotWidget from "../components/ChatbotWidget";
 
 function MainLayout() {
     const { cart } = useCart();
@@ -166,6 +167,7 @@ function MainLayout() {
 
             {/* Page Content */}
             <Outlet />
+            <ChatbotWidget />
         </div>
     );
 }

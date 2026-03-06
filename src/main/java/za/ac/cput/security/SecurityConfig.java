@@ -51,7 +51,8 @@ public class SecurityConfig {
                                 "/customer/read/**",
                                 "/customer/read/email/**",
                                 "/orders/**",
-                                "/customers/**"
+                                "/customers/**",
+                                "/chatbot/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
